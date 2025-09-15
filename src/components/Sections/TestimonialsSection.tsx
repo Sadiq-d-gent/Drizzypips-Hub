@@ -1,4 +1,4 @@
-import { Star } from "lucide-react";
+import { Star, Play } from "lucide-react";
 import { useInView } from "react-intersection-observer";
 import { useState } from "react";
 import Slider from "react-slick";
@@ -9,15 +9,45 @@ import "slick-carousel/slick/slick-theme.css";
 
 const TestimonialsSection = () => {
   const featuredVideos = [
-    { id: "yt1", videoId: "dQw4w9WgXcQ" },
-    { id: "yt2", videoId: "dQw4w9WgXcQ" },
-    { id: "yt3", videoId: "dQw4w9WgXcQ" },
+    {
+      id: "yt1",
+      videoId: "_ADDCOdLw8k",
+      title: "Marcus' Success Story",
+      description:
+        "From losing trades to consistent profits – Marcus shares how Drizzypips mentorship changed everything.",
+    },
+    {
+      id: "yt2",
+      videoId: "eZL6Oxm5fOo",
+      title: "Sarah’s Transformation",
+      description:
+        "See how Sarah went from a part-time trader to earning more than her 9-5 job in just months.",
+    },
+    {
+      id: "yt3",
+      videoId: "pqWTOnD-aR0",
+      title: "David’s Prop Firm Journey",
+      description:
+        "Watch David explain how he got funded with a $100k account after 2 months of training.",
+    },
   ];
 
   const localVideos = [
-    { id: "lv1", file: "/videos/vid1.mp4" },
-    { id: "lv2", file: "/videos/vid2.mp4" },
-    { id: "lv3", file: "/videos/vid3.mp4" },
+    {
+      id: "lv1",
+      file: "/videos/vid1.mp4",
+      description: "Emma talks about her journey from zero knowledge to consistent profits.",
+    },
+    {
+      id: "lv2",
+      file: "/videos/vid2.mp4",
+      description: "A quick clip of one of our group mentorship sessions in action.",
+    },
+    {
+      id: "lv3",
+      file: "/videos/vid3.mp4",
+      description: "Watch behind-the-scenes of our strategy breakdown session.",
+    },
   ];
 
   const testimonials = [
@@ -101,7 +131,7 @@ const TestimonialsSection = () => {
                 ref={ref}
                 data-aos="fade-up"
                 data-aos-delay={i * 100}
-                className="rounded-xl overflow-hidden shadow-lg border border-border"
+                className="rounded-xl overflow-hidden shadow-lg border border-border flex flex-col"
               >
                 <div className="aspect-video">
                   <iframe
@@ -109,11 +139,27 @@ const TestimonialsSection = () => {
                     src={`https://www.youtube.com/embed/${video.videoId}?autoplay=${
                       inView ? 1 : 0
                     }&mute=1&loop=1&playlist=${video.videoId}&controls=0`}
-                    title={`Featured Video ${i + 1}`}
+                    title={video.title}
                     frameBorder="0"
                     allow="autoplay; encrypted-media"
                     allowFullScreen
                   />
+                </div>
+                <div className="p-4">
+                  <h3 className="text-lg font-semibold text-foreground mb-2">
+                    {video.title}
+                  </h3>
+                  <p className="text-muted-foreground text-sm mb-3">
+                    {video.description}
+                  </p>
+                  <a
+                    href={`https://www.youtube.com/watch?v=${video.videoId}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-primary hover:underline text-sm font-medium"
+                  >
+                    Watch on YouTube →
+                  </a>
                 </div>
               </div>
             );
@@ -127,16 +173,24 @@ const TestimonialsSection = () => {
               key={vid.id}
               data-aos="fade-up"
               data-aos-delay={i * 100}
-              className="rounded-xl overflow-hidden shadow-lg border border-border"
+              className="rounded-xl overflow-hidden shadow-lg border border-border group"
             >
-              <video
-                className="w-full h-full object-cover"
-                src={vid.file}
-                autoPlay
-                muted
-                loop
-                playsInline
-              />
+              <div className="relative aspect-video">
+                <video
+                  className="w-full h-full object-cover"
+                  src={vid.file}
+                  autoPlay
+                  muted
+                  loop
+                  playsInline
+                />
+                <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                  <Play className="h-10 w-10 text-white" />
+                </div>
+              </div>
+              <div className="p-4">
+                <p className="text-muted-foreground text-sm">{vid.description}</p>
+              </div>
             </div>
           ))}
         </div>
