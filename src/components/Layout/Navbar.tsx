@@ -49,7 +49,7 @@ const Navbar = () => {
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
-          {/* Logo */}
+          {/* Logo + Name */}
           <Link
             to="/"
             className="flex items-center space-x-3 hover:opacity-90 transition-opacity"
@@ -57,8 +57,11 @@ const Navbar = () => {
             <img 
               src={logoImage} 
               alt="Drizzypips Logo" 
-              className="h-10 w-auto object-contain"
+              className="h-10 w-10 object-cover rounded-full border border-border"
             />
+            <span className="text-xl font-bold text-foreground tracking-wide">
+              Drizzypips
+            </span>
           </Link>
 
           {/* Desktop Navigation */}
