@@ -1,0 +1,212 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Premium Forex Trading Website Design System */
+
+@layer base {
+  :root {
+    /* Light theme - Professional trading theme */
+    --background: 0 0% 100%;
+    --foreground: 0 0% 0%; /* Pure black text like logo */
+    
+    --trading-dark: 0 0% 100%;
+    --trading-darker: 240 4.8% 95.9%;
+    --trading-light: 0 0% 0%;
+    --trading-muted: 240 3.8% 46.1%;
+    --trading-green: 142 70% 45%; /* Professional green from logo */
+    --trading-red: 0 84% 60%; /* Professional red from logo */
+    
+    --success: 142 70% 45%;
+    --success-foreground: 0 0% 100%;
+    --success-muted: 142 70% 90%;
+    
+    --primary: 142 70% 45%; /* Professional green from logo */
+    --primary-foreground: 0 0% 100%;
+    --primary-hover: 142 70% 40%;
+    
+    --secondary: 240 4.8% 95.9%;
+    --secondary-foreground: 0 0% 0%;
+    
+    --muted: 240 4.8% 95.9%;
+    --muted-foreground: 240 3.8% 46.1%;
+    
+    --accent: 0 84% 60%; /* Professional red from logo */
+    --accent-foreground: 0 0% 100%;
+    
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+    
+    --border: 240 5.9% 90%;
+    --input: 240 5.9% 90%;
+    --ring: 142 70% 45%;
+    
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 0%;
+    
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 0%;
+    
+    --radius: 0.75rem;
+  }
+
+  .dark {
+    /* Dark theme (primary) - Professional trading theme */
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+    
+    --trading-dark: 222.2 84% 4.9%;
+    --trading-darker: 222.2 84% 3%;
+    --trading-light: 210 40% 98%;
+    --trading-muted: 215 20.2% 65.1%;
+    --trading-green: 142 70% 45%; /* Bull/Buy color */
+    --trading-red: 0 84% 60%; /* Bear/Sell color */
+    
+    --success: 142 70% 45%;
+    --success-foreground: 0 0% 100%;
+    --success-muted: 142 70% 20%;
+    
+    --primary: 142 70% 45%; /* Professional green from logo */
+    --primary-foreground: 0 0% 100%;
+    --primary-hover: 142 70% 50%;
+    
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+    
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    
+    --accent: 0 84% 60%; /* Professional red from logo */
+    --accent-foreground: 0 0% 100%;
+    
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+    
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 142 70% 45%;
+    
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+    
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+  }
+
+  /* Gradients */
+  :root {
+    --gradient-primary: linear-gradient(135deg, hsl(var(--success)) 0%, hsl(var(--primary-hover)) 100%);
+    --gradient-hero: linear-gradient(135deg, hsl(var(--trading-dark)) 0%, hsl(var(--trading-darker)) 50%, hsl(var(--trading-dark)) 100%);
+    --gradient-overlay: linear-gradient(135deg, rgba(20, 20, 23, 0.8) 0%, rgba(20, 20, 23, 0.9) 100%);
+    --gradient-card: linear-gradient(135deg, hsl(var(--card)) 0%, hsl(var(--muted)) 100%);
+    
+    /* Shadows */
+    --shadow-premium: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    --shadow-success: 0 10px 15px -3px rgba(34, 197, 94, 0.2);
+    --shadow-glow: 0 0 20px rgba(34, 197, 94, 0.3);
+    
+    /* Animations */
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-bounce: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    overflow-x: hidden; /* Prevent horizontal scrolling */
+  }
+  
+  html {
+    scroll-behavior: smooth;
+    overflow-x: hidden; /* Prevent horizontal scrolling */
+  }
+  
+  /* Custom scrollbar */
+  ::-webkit-scrollbar {
+    width: 8px;
+  }
+  
+  ::-webkit-scrollbar-track {
+    @apply bg-muted;
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    @apply bg-primary rounded-full;
+  }
+  
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-primary-hover;
+  }
+}
+
+@layer components {
+  /* Premium Button Variants */
+  .btn-premium {
+    @apply bg-gradient-to-r from-success to-primary text-primary-foreground font-semibold px-8 py-4 rounded-xl shadow-success hover:shadow-glow transition-all duration-300 hover:scale-105 active:scale-95;
+  }
+  
+  .btn-outline-premium {
+    @apply border-2 border-primary text-primary bg-transparent hover:bg-primary hover:text-primary-foreground font-semibold px-8 py-4 rounded-xl transition-all duration-300 hover:scale-105 active:scale-95;
+  }
+  
+  /* Glass morphism effect */
+  .glass {
+    @apply bg-white/10 backdrop-blur-md border border-white/20;
+  }
+  
+  /* Premium card styles */
+  .premium-card {
+    @apply bg-card border border-border rounded-2xl p-8 shadow-premium hover:shadow-2xl transition-all duration-300 hover:-translate-y-2;
+  }
+  
+  /* Hero video overlay */
+  .video-overlay {
+    background: var(--gradient-overlay);
+  }
+  
+  /* Glowing text effect */
+  .text-glow {
+    text-shadow: 0 0 20px rgba(34, 197, 94, 0.5);
+  }
+  
+  /* Custom animations */
+  .animate-float {
+    animation: float 6s ease-in-out infinite;
+  }
+  
+  .animate-pulse-slow {
+    animation: pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+  
+  .animate-slide-up {
+    animation: slideUp 0.6s ease-out forwards;
+  }
+
+  /* WhatsApp button styles */
+  .whatsapp-button {
+    @apply fixed bottom-6 right-6 z-50 bg-[#25D366] text-white p-4 rounded-full shadow-2xl hover:bg-[#128C7E] transition-all duration-300;
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
+}
