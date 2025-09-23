@@ -1,153 +1,142 @@
-import { ExternalLink, Play } from "lucide-react";
+import { ExternalLink, Play, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import exnessLogo from "@/assets/exness-logo.jpg";
 
 const BrokerSection = () => {
-  const brokers = [
-    {
-      name: "IC Markets",
-      description: "Professional ECN broker with tight spreads and fast execution. Perfect for scalping and high-frequency trading strategies.",
-      setupVideoId: "dQw4w9WgXcQ",
-      refLink: "https://icmarkets.com?ref=drizzypips",
-      features: ["Raw Spreads from 0.0 pips", "MetaTrader 4 & 5", "cTrader Platform", "24/7 Support"],
-      rating: "⭐⭐⭐⭐⭐",
-    },
-    {
-      name: "XM Global",
-      description: "Regulated broker with excellent education resources and flexible account types. Great for beginners and experienced traders.",
-      setupVideoId: "dQw4w9WgXcQ", 
-      refLink: "https://xm.com?ref=drizzypips",
-      features: ["$5 Minimum Deposit", "1:888 Leverage", "100+ Instruments", "No Requotes"],
-      rating: "⭐⭐⭐⭐⭐",
-    },
-    {
-      name: "FTMO",
-      description: "Leading prop trading firm offering funded accounts up to $400k. Perfect for skilled traders looking for capital.",
-      setupVideoId: "dQw4w9WgXcQ",
-      refLink: "https://ftmo.com?ref=drizzypips", 
-      features: ["Up to $400k Funding", "80% Profit Split", "Free Retries", "Scaling Program"],
-      rating: "⭐⭐⭐⭐⭐",
-    },
-    {
-      name: "MyForexFunds",
-      description: "Fast-growing prop firm with competitive profit splits and flexible trading rules. Quick evaluation process.",
-      setupVideoId: "dQw4w9WgXcQ",
-      refLink: "https://myforexfunds.com?ref=drizzypips",
-      features: ["85% Profit Split", "No Time Limits", "$300k Max Funding", "Instant Funding"],
-      rating: "⭐⭐⭐⭐⭐",
-    },
-  ];
-
-  const handleVideoClick = (videoId: string, brokerName: string) => {
-    window.open(`https://www.youtube.com/watch?v=${videoId}`, '_blank');
+  const broker = {
+    name: "Exness",
+    description:
+      "Globally trusted broker with lightning-fast execution, zero hidden fees, and deep liquidity. Ideal for both beginners and professional traders who need reliability and transparency.",
+    setupVideoId: "dQw4w9WgXcQ",
+    refLink: "https://one.exnessonelink.com/a/8a8m0r1s9v", // Use your affiliate/referral link
+    features: [
+      "Spreads from 0.0 pips",
+      "Instant Withdrawals",
+      "MetaTrader 4 & 5",
+      "24/7 Multilingual Support",
+    ],
+    rating: 5,
   };
 
-  const handleBrokerLink = (link: string, brokerName: string) => {
-    window.open(link, '_blank');
+  const handleVideoClick = () => {
+    window.open(`https://www.youtube.com/watch?v=${broker.setupVideoId}`, "_blank");
+  };
+
+  const handleBrokerLink = () => {
+    window.open(broker.refLink, "_blank");
   };
 
   return (
     <section className="py-20 bg-muted/30" id="brokers">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Section Header */}
         <div data-aos="fade-up" className="text-center mb-16">
           <h2 className="text-4xl sm:text-5xl font-bold text-foreground mb-4">
-            Recommended Brokers
+            Featured Broker
           </h2>
-          <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            Trusted brokers and prop firms that I personally use and recommend. 
-            Each comes with detailed setup guides and exclusive benefits.
+          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+            The broker I personally use and recommend for all Drizzypips mentees.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          {brokers.map((broker, index) => (
-            <div
-              key={broker.name}
-              data-aos="fade-up"
-              data-aos-delay={index * 100}
-              className="premium-card"
-            >
-              <div className="flex items-start justify-between mb-4">
-                <div>
-                  <h3 className="text-2xl font-bold text-foreground mb-2">
-                    {broker.name}
-                  </h3>
-                  <div className="text-sm text-muted-foreground">
-                    {broker.rating}
-                  </div>
-                </div>
-                <div className="w-16 h-16 bg-gradient-primary rounded-xl flex items-center justify-center">
-                  <span className="text-white font-bold text-lg">
-                    {broker.name.substring(0, 2).toUpperCase()}
-                  </span>
-                </div>
-              </div>
-
-              <p className="text-muted-foreground mb-6 leading-relaxed">
-                {broker.description}
-              </p>
-
-              <div className="space-y-3 mb-6">
-                <h4 className="font-semibold text-foreground">Key Features:</h4>
-                <ul className="space-y-2">
-                  {broker.features.map((feature, featureIndex) => (
-                    <li
-                      key={featureIndex}
-                      className="flex items-center space-x-2 text-sm text-muted-foreground"
-                    >
-                      <div className="w-1.5 h-1.5 bg-success rounded-full" />
-                      <span>{feature}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-
-              <div className="flex flex-col sm:flex-row gap-3">
-                <Button
-                  onClick={() => handleVideoClick(broker.setupVideoId, broker.name)}
-                  variant="outline"
-                  className="flex-1 group"
-                >
-                  <Play className="h-4 w-4 mr-2 group-hover:scale-110 transition-transform" />
-                  Watch Setup Guide
-                </Button>
-                
-                <Button
-                  onClick={() => handleBrokerLink(broker.refLink, broker.name)}
-                  className="btn-premium flex-1"
-                >
-                  <ExternalLink className="h-4 w-4 mr-2" />
-                  Open Account
-                </Button>
-              </div>
+        {/* Featured Broker Card */}
+        <div
+          data-aos="fade-up"
+          className="premium-card relative overflow-hidden p-8 text-center"
+        >
+          <div className="flex flex-col items-center mb-6">
+            <div className="w-24 h-24 bg-white rounded-full flex items-center justify-center mb-4 shadow-lg border border-border">
+              <img
+                src={exnessLogo}
+                alt="Exness Logo"
+                className="w-16 h-16 object-contain"
+              />
             </div>
-          ))}
+            <h3 className="text-3xl font-bold text-foreground">{broker.name}</h3>
+            <div className="flex space-x-1 text-yellow-400 my-3">
+              {[...Array(broker.rating)].map((_, i) => (
+                <span key={i}>⭐</span>
+              ))}
+            </div>
+            <p className="text-muted-foreground max-w-2xl">{broker.description}</p>
+
+            {/* Trust Badge */}
+            <div className="flex items-center space-x-2 bg-success/10 px-4 py-2 rounded-full mt-4">
+              <ShieldCheck className="text-success h-5 w-5" />
+              <span className="text-success font-medium">
+                Personally Recommended by Drizzypips
+              </span>
+            </div>
+          </div>
+
+          {/* Features */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-left mb-8">
+            {broker.features.map((feature, index) => (
+              <div
+                key={index}
+                className="flex items-center space-x-3 text-muted-foreground"
+              >
+                <div className="w-2 h-2 bg-success rounded-full" />
+                <span>{feature}</span>
+              </div>
+            ))}
+          </div>
+
+          {/* Action Buttons */}
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Button
+              onClick={handleVideoClick}
+              variant="outline"
+              className="flex items-center justify-center group"
+            >
+              <Play className="h-4 w-4 mr-2 group-hover:scale-110 transition-transform" />
+              Watch Setup Guide
+            </Button>
+
+            <Button
+              onClick={handleBrokerLink}
+              className="btn-premium flex items-center justify-center"
+            >
+              <ExternalLink className="h-4 w-4 mr-2" />
+              Open Account
+            </Button>
+          </div>
         </div>
 
-        <div data-aos="fade-up" data-aos-delay="400" className="mt-16 text-center">
-          <div className="bg-gradient-card p-8 rounded-2xl border border-border max-w-4xl mx-auto">
-            <h3 className="text-2xl font-bold text-foreground mb-4">
-              Why These Brokers?
-            </h3>
-            <p className="text-lg text-muted-foreground mb-6">
-              I've personally tested and traded with each of these brokers. They offer 
-              the best combination of spreads, execution speed, regulation, and support 
-              that every serious trader needs.
-            </p>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
-              <div className="p-4">
-                <div className="text-3xl font-bold text-success mb-2">✓</div>
-                <div className="font-semibold text-foreground">Regulated</div>
-                <div className="text-sm text-muted-foreground">All brokers are properly regulated</div>
+        {/* Why Exness */}
+        <div
+          data-aos="fade-up"
+          data-aos-delay="200"
+          className="mt-16 text-center bg-gradient-card p-8 rounded-2xl border border-border"
+        >
+          <h3 className="text-2xl font-bold text-foreground mb-4">
+            Why Exness?
+          </h3>
+          <p className="text-lg text-muted-foreground mb-6">
+            Exness offers institutional-grade trading conditions with
+            ultra-reliable execution, making it perfect for both retail and
+            professional traders worldwide.
+          </p>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="p-4">
+              <div className="text-3xl font-bold text-success mb-2">✓</div>
+              <div className="font-semibold text-foreground">Trusted Globally</div>
+              <div className="text-sm text-muted-foreground">
+                Regulated in multiple jurisdictions
               </div>
-              <div className="p-4">
-                <div className="text-3xl font-bold text-success mb-2">⚡</div>
-                <div className="font-semibold text-foreground">Fast Execution</div>
-                <div className="text-sm text-muted-foreground">Sub-second order execution</div>
+            </div>
+            <div className="p-4">
+              <div className="text-3xl font-bold text-success mb-2">⚡</div>
+              <div className="font-semibold text-foreground">Lightning Execution</div>
+              <div className="text-sm text-muted-foreground">
+                Super-fast order matching with minimal slippage
               </div>
-              <div className="p-4">
-                <div className="text-3xl font-bold text-success mb-2">💰</div>
-                <div className="font-semibold text-foreground">Competitive</div>
-                <div className="text-sm text-muted-foreground">Best spreads and conditions</div>
+            </div>
+            <div className="p-4">
+              <div className="text-3xl font-bold text-success mb-2">💳</div>
+              <div className="font-semibold text-foreground">Instant Withdrawals</div>
+              <div className="text-sm text-muted-foreground">
+                Get your profits in minutes, 24/7
               </div>
             </div>
           </div>

@@ -1,249 +1,219 @@
-import { Star, Play } from "lucide-react";
-import { useInView } from "react-intersection-observer";
 import { useState } from "react";
+import { Play, Volume2, VolumeX, Star } from "lucide-react";
 import Slider from "react-slick";
 
-// Slick carousel styles
+// Slick CSS (ensure these are installed in your project)
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 
 const TestimonialsSection = () => {
-  const featuredVideos = [
+  // per-video muted state (default: muted)
+  const [mutedVideos, setMutedVideos] = useState<Record<number, boolean>>({});
+
+  const toggleMute = (id: number) => {
+    setMutedVideos((prev) => ({ ...prev, [id]: !(prev[id] ?? true) }));
+  };
+
+  const featuredYouTubeVideos = [
     {
-      id: "yt1",
-      videoId: "_ADDCOdLw8k",
-      title: "Marcus' Success Story",
-      description:
-        "From losing trades to consistent profits – Marcus shares how Drizzypips mentorship changed everything.",
-    },
-    {
-      id: "yt2",
-      videoId: "eZL6Oxm5fOo",
-      title: "Sarah’s Transformation",
-      description:
-        "See how Sarah went from a part-time trader to earning more than her 9-5 job in just months.",
-    },
-    {
-      id: "yt3",
+      id: 101,
+      title: "How to develop self confidence as a trader",
       videoId: "pqWTOnD-aR0",
-      title: "David’s Prop Firm Journey",
+      thumbnail: "https://img.youtube.com/vi/pqWTOnD-aR0/maxresdefault.jpg",
       description:
-        "Watch David explain how he got funded with a $100k account after 2 months of training.",
+        "Learn how trade with confidence.",
+    },
+    {
+      id: 102,
+      title: "Uses and how to calculate leverage in forex trading",
+      videoId: "_ADDCOdLw8k",
+      thumbnail: "https://img.youtube.com/vi/_ADDCOdLw8k/maxresdefault.jpg",
+      description:
+        "Learn about leverage, it uses and how to calculate it as trader.",
+    },
+    {
+      id: 103,
+      title: "Time Frames in Forex Trading",
+      videoId: "eZL6Oxm5fOo",
+      thumbnail: "https://img.youtube.com/vi/eZL6Oxm5fOo/maxresdefault.jpg",
+      description: "Learn how to break a candle as a trader.",
     },
   ];
 
   const localVideos = [
     {
-      id: "lv1",
-      file: "/videos/vid1.mp4",
-      description: "Emma talks about her journey from zero knowledge to consistent profits.",
+      id: 201,
+      src: "/videos/vid1.mp4",
+      description: "A clip of mentorship session with Drizzypips revealing key trading strategies.",
+      name: "Drizzypips",
+      role: "Professional Trader",
     },
     {
-      id: "lv2",
-      file: "/videos/vid2.mp4",
-      description: "A quick clip of one of our group mentorship sessions in action.",
+      id: 202,
+      src: "/videos/vid2.mp4",
+      description: "Aisha talks about her experience and first profitable month with Drizzypips as she received her certificate.",
+      name: "Aisha Bello",
+      role: "Beginner Trader",
     },
     {
-      id: "lv3",
-      file: "/videos/vid3.mp4",
-      description: "Watch behind-the-scenes of our strategy breakdown session.",
+      id: 203,
+      src: "/videos/vid3.mp4",
+      description: "How student at Drizzypips spend their weekends ina fancy restaurants to enjoy their lives.",
+      name: "",
+      role: "Having Fun",
     },
   ];
 
   const testimonials = [
     {
       id: 1,
-      name: "Marcus Johnson",
-      role: "Full-time Trader",
-      image: "/images/marcus.jpg",
+      name: "Ngozi Okafor",
+      role: "Trader",
+      image: "/image/ngozi.avif",
+      text: "Drizzypips mentorship made me profitable in just 3 months!",
       rating: 5,
-      quote:
-        "Drizzypips changed my trading completely. From losing money to consistent profits in just 3 months.",
     },
     {
       id: 2,
-      name: "Sarah Williams",
-      role: "Part-time Trader",
-      image: "/images/sarah.jpg",
+      name: "Bola Adeyemi",
+      role: "Student Trader",
+      image: "/image/bola.avif",
+      text: "I learned proper risk management and discipline.",
       rating: 5,
-      quote:
-        "The best investment I ever made. Now I'm making more from trading than my day job.",
     },
     {
       id: 3,
-      name: "David Chen",
+      name: "Ifeanyi Uzo",
       role: "Prop Firm Trader",
-      image: "/images/david.jpg",
+      image: "/image/ifenyi.avif",
+      text: "I passed my prop firm challenge thanks to Drizzypips.",
       rating: 5,
-      quote:
-        "Got funded with a $100k account after 2 months of training. Drizzypips strategies work!",
     },
     {
       id: 4,
-      name: "Emma Rodriguez",
-      role: "Student Trader",
-      image: "/images/emma.jpg",
+      name: "Hauwa Sani",
+      role: "Scalper",
+      image: "/image/hauwa.avif",
+      text: "Finally trading profitably after years of struggle.",
       rating: 5,
-      quote:
-        "Started with zero knowledge. Now I'm consistently profitable and teaching others too.",
     },
   ];
 
   const sliderSettings = {
     dots: true,
     infinite: true,
-    speed: 600,
-    slidesToShow: 2,
-    slidesToScroll: 1,
     autoplay: true,
-    autoplaySpeed: 4000,
-    responsive: [
-      { breakpoint: 1024, settings: { slidesToShow: 2 } },
-      { breakpoint: 640, settings: { slidesToShow: 1 } },
-    ],
+    autoplaySpeed: 5000,
+    arrows: false,
+    slidesToShow: 1,
+    slidesToScroll: 1,
   };
 
   return (
     <section className="py-20 bg-background" id="testimonials">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Section Heading */}
-        <div data-aos="fade-up" className="text-center mb-16">
+        {/* Heading */}
+        <div data-aos="fade-up" className="text-center mb-12">
           <h2 className="text-4xl sm:text-5xl font-bold text-foreground mb-4">
             Success Stories
           </h2>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            Real students, real results. Watch their journeys and hear what they
-            have to say.
+            Real students, real results. Hear their stories and watch them share their experience.
           </p>
         </div>
 
-        {/* Row 1: Featured YouTube Videos */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-          {featuredVideos.map((video, i) => {
-            const { ref, inView } = useInView({
-              triggerOnce: false,
-              threshold: 0.5,
-            });
-
-            return (
-              <div
-                key={video.id}
-                ref={ref}
-                data-aos="fade-up"
-                data-aos-delay={i * 100}
-                className="rounded-xl overflow-hidden shadow-lg border border-border flex flex-col"
-              >
-                <div className="aspect-video">
-                  <iframe
-                    className="w-full h-full"
-                    src={`https://www.youtube.com/embed/${video.videoId}?autoplay=${
-                      inView ? 1 : 0
-                    }&mute=1&loop=1&playlist=${video.videoId}&controls=0`}
-                    title={video.title}
-                    frameBorder="0"
-                    allow="autoplay; encrypted-media"
-                    allowFullScreen
-                  />
-                </div>
-                <div className="p-4">
-                  <h3 className="text-lg font-semibold text-foreground mb-2">
-                    {video.title}
-                  </h3>
-                  <p className="text-muted-foreground text-sm mb-3">
-                    {video.description}
-                  </p>
-                  <a
-                    href={`https://www.youtube.com/watch?v=${video.videoId}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-primary hover:underline text-sm font-medium"
-                  >
-                    Watch on YouTube →
-                  </a>
-                </div>
+        {/* Featured YouTube Videos (top) */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8" data-aos="fade-up">
+          {featuredYouTubeVideos.map((video) => (
+            <div key={video.id} className="premium-card p-4 flex flex-col">
+              <div className="relative aspect-video rounded-xl overflow-hidden">
+                <img
+                  src={video.thumbnail}
+                  alt={video.title}
+                  className="w-full h-full object-cover"
+                />
+                <a
+                  href={`https://www.youtube.com/watch?v=${video.videoId}`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="absolute inset-0 flex items-center justify-center bg-black/30 hover:bg-black/50 transition"
+                >
+                  <Play className="text-white w-12 h-12" />
+                </a>
               </div>
-            );
-          })}
+
+              <h3 className="text-lg font-semibold mt-4">{video.title}</h3>
+              <p className="text-muted-foreground mb-3">{video.description}</p>
+              <a
+                href={`https://www.youtube.com/watch?v=${video.videoId}`}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center gap-2 text-primary hover:underline"
+              >
+                <Play className="w-4 h-4" /> Watch on YouTube
+              </a>
+            </div>
+          ))}
         </div>
 
-        {/* Row 2: Local Videos */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16">
-          {localVideos.map((vid, i) => (
-            <div
-              key={vid.id}
-              data-aos="fade-up"
-              data-aos-delay={i * 100}
-              className="rounded-xl overflow-hidden shadow-lg border border-border group"
-            >
-              <div className="relative aspect-video">
+        {/* Local Videos (middle) */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-12" data-aos="fade-up">
+          {localVideos.map((v) => (
+            <div key={v.id} className="premium-card p-4">
+              <div className="relative aspect-video rounded-xl overflow-hidden">
                 <video
-                  className="w-full h-full object-cover"
-                  src={vid.file}
+                  src={v.src}
                   autoPlay
-                  muted
                   loop
                   playsInline
+                  muted={mutedVideos[v.id] ?? true}
+                  className="w-full h-full object-cover"
                 />
-                <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                  <Play className="h-10 w-10 text-white" />
-                </div>
+
+                <button
+                  onClick={() => toggleMute(v.id)}
+                  aria-label={mutedVideos[v.id] ? "Unmute video" : "Mute video"}
+                  title={mutedVideos[v.id] ? "Unmute" : "Mute"}
+                  className="absolute bottom-3 right-3 bg-black/50 text-white p-2 rounded-full hover:bg-black/70 transition"
+                >
+                  {mutedVideos[v.id] ?? true ? (
+                    <VolumeX className="w-5 h-5" />
+                  ) : (
+                    <Volume2 className="w-5 h-5" />
+                  )}
+                </button>
               </div>
-              <div className="p-4">
-                <p className="text-muted-foreground text-sm">{vid.description}</p>
-              </div>
+
+              <p className="mt-3 text-muted-foreground">{v.description}</p>
+              <div className="mt-2 font-bold text-foreground">{v.name}</div>
+              <div className="text-sm text-muted-foreground">{v.role}</div>
             </div>
           ))}
         </div>
 
-        {/* Row 3: Testimonials Slider */}
-        <Slider {...sliderSettings}>
-          {testimonials.map((t, index) => (
-            <div key={t.id} data-aos="fade-up" data-aos-delay={index * 100}>
-              <div className="bg-card border border-border rounded-2xl p-6 mx-3 shadow-lg h-full flex flex-col items-center text-center">
-                <img
-                  src={t.image}
-                  alt={t.name}
-                  className="w-20 h-20 rounded-full object-cover mb-4"
-                />
-                <div className="flex items-center justify-center space-x-1 mb-3">
-                  {[...Array(t.rating)].map((_, i) => (
-                    <Star
-                      key={i}
-                      className="h-5 w-5 text-yellow-400 fill-current"
-                    />
-                  ))}
-                </div>
-                <blockquote className="italic text-muted-foreground mb-4">
-                  "{t.quote}"
-                </blockquote>
-                <div>
-                  <h4 className="font-semibold text-foreground">{t.name}</h4>
-                  <p className="text-sm text-muted-foreground">{t.role}</p>
+        {/* Testimonial slider (bottom) */}
+        <div className="mt-12" data-aos="fade-up">
+          <Slider {...sliderSettings}>
+            {testimonials.map((t) => (
+              <div key={t.id} className="p-4">
+                <div className="premium-card h-full flex flex-col items-center text-center p-6">
+                  <img
+                    src={t.image}
+                    alt={t.name}
+                    className="w-24 h-24 rounded-full mb-4 object-cover"
+                  />
+                  <div className="flex items-center justify-center space-x-2 mb-3">
+                    {Array.from({ length: t.rating }).map((_, i) => (
+                      <Star key={i} className="w-4 h-4 text-yellow-400" />
+                    ))}
+                  </div>
+                  <blockquote className="italic text-muted-foreground mb-4">"{t.text}"</blockquote>
+                  <div className="font-bold text-foreground">{t.name}</div>
+                  <div className="text-sm text-muted-foreground">{t.role}</div>
                 </div>
               </div>
-            </div>
-          ))}
-        </Slider>
-
-        {/* CTA */}
-        <div
-          data-aos="fade-up"
-          data-aos-delay="400"
-          className="text-center mt-16"
-        >
-          <p className="text-lg text-muted-foreground mb-6">
-            Join hundreds of successful traders who've transformed their lives
-          </p>
-          <button
-            onClick={() =>
-              document
-                .getElementById("pricing")
-                ?.scrollIntoView({ behavior: "smooth" })
-            }
-            className="btn-premium"
-          >
-            Start Your Success Story
-          </button>
+            ))}
+          </Slider>
         </div>
       </div>
     </section>
