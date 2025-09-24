@@ -51,9 +51,9 @@ const TestimonialsSection = () => {
     {
       id: 202,
       src: "/videos/vid2.mp4",
-      description: "Aisha talks about her experience and first profitable month with Drizzypips as she received her certificate.",
-      name: "Aisha Bello",
-      role: "Beginner Trader",
+      description: "Mrs Comfort talks about her experience and first profitable month with Drizzypips as she received her certificate.",
+      name: "Mrs Comfort",
+      role: "Forex Trader",
     },
     {
       id: 203,
