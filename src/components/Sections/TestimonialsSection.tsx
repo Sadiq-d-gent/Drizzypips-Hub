@@ -43,20 +43,27 @@ const TestimonialsSection = () => {
   const localVideos = [
     {
       id: 201,
+      src: "/videos/vid4.mp4",
+      description: "Trade at drizzypips with comfort, We have proper accommodation.",
+      name: "Trade with Drizzypips",
+      role: "Trade in Comfort",
+    },
+    {
+      id: 202,
       src: "/videos/vid1.mp4",
       description: "A clip of mentorship session with Drizzypips revealing key trading strategies.",
       name: "Drizzypips",
       role: "Professional Trader",
     },
     {
-      id: 202,
+      id: 203,
       src: "/videos/vid2.mp4",
       description: "Mrs Comfort talks about her experience and first profitable month with Drizzypips as she received her certificate.",
       name: "Mrs Comfort",
       role: "Forex Trader",
     },
     {
-      id: 203,
+      id: 204,
       src: "/videos/vid3.mp4",
       description: "How student at Drizzypips spend their weekends ina fancy restaurants to enjoy their lives.",
       name: "",
