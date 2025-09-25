@@ -7,7 +7,7 @@ const Footer = () => {
     {
       name: "Instagram",
       icon: Instagram,
-      href: "https://instagram.com/drizzypips",
+      href: "https://instagram.com/drizzypipsacademy",
       color: "hover:text-pink-500",
     },
     {
@@ -19,7 +19,7 @@ const Footer = () => {
     {
       name: "WhatsApp",
       icon: MessageCircle,
-      href: "https://wa.me/1234567890",
+      href: "https://wa.me/+2349035853860?text=Hi%20Drizzypips,%20I'm%20interested%20in%20your%20mentorship%20program", 
       color: "hover:text-success",
     },
   ];
@@ -104,7 +104,7 @@ const Footer = () => {
                 className="btn-premium mt-4"
               >
                 <a
-                  href="https://wa.me/1234567890?text=Hi%20Drizzypips,%20I'm%20interested%20in%20your%20mentorship%20program"
+                  href="https://wa.me/+2349035853860?text=Hi%20Drizzypips,%20I'm%20interested%20in%20your%20mentorship%20program"
                   target="_blank"
                   rel="noopener noreferrer"
                 >

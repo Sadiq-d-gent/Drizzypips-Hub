@@ -18,7 +18,7 @@ const queryClient = new QueryClient();
 const App = () => {
   useEffect(() => {
     AOS.init({
-      duration: 1300,
+      duration: 1600,
       easing: "ease-out-cubic",
       once: true,
       offset: 100,
