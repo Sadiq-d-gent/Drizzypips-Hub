@@ -130,7 +130,7 @@ const TestimonialsSection = () => {
         </div>
 
         {/* Featured YouTube Videos (top) */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8" data-aos="fade-up">
+        {/* <div className="grid grid-cols-1 md:grid-cols-3 gap-8" data-aos="fade-up">
           {featuredYouTubeVideos.map((video) => (
             <div key={video.id} className="premium-card p-4 flex flex-col">
               <div className="relative aspect-video rounded-xl overflow-hidden">
@@ -161,7 +161,7 @@ const TestimonialsSection = () => {
               </a>
             </div>
           ))}
-        </div>
+        </div> */}
 
         {/* Local Videos (middle) */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-12" data-aos="fade-up">
