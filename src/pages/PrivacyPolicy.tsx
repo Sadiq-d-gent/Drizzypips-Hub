@@ -1,5 +1,5 @@
 import Navbar from "@/components/Layout/Navbar";
-import Footer from "@/components/Layout/Footer";
+import Footer from "../components/Layout/Footer";
 import React from "react";
 
 const PrivacyPolicy: React.FC = () => {
@@ -20,8 +20,8 @@ const PrivacyPolicy: React.FC = () => {
           </ul>
           <p className="text-muted-foreground mt-4">
             For questions, contact us at{" "}
-            <a href="mailto:your@email.com" className="text-primary underline">
-              your@email.com
+            <a href="mailto:Drizzypips@gmail.com" className="text-primary underline">
+              Drizzypips@gmail.com
             </a>.
           </p>
         </div>
