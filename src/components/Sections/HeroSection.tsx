@@ -64,7 +64,7 @@ const HeroSection = () => {
             className="btn-outline-premium text-lg px-8 py-6 group"
           >
             <a
-              href="https://t.me/drizzypipscommunity"
+              href="https://t.me/Drizzypipz"
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center"

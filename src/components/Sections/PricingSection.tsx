@@ -199,18 +199,7 @@ const PricingSection = () => {
           </div>
         </div>
 
-        {/* Money Back Guarantee */}
-        <div data-aos="fade-up" data-aos-delay="600" className="mt-12 text-center">
-          <div className="flex items-center justify-center space-x-2 text-success">
-            <div className="w-8 h-8 bg-success rounded-full flex items-center justify-center">
-              <Check className="h-5 w-5 text-white" />
-            </div>
-            <span className="font-semibold">30-Day Money-Back Guarantee</span>
-          </div>
-          <p className="text-sm text-muted-foreground mt-2">
-            Not satisfied? Get a full refund within 30 days, no questions asked.
-          </p>
-        </div>
+        
       </div>
     </section>
   );
