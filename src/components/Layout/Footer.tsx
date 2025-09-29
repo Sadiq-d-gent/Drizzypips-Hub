@@ -24,10 +24,14 @@ const Footer = () => {
     },
   ];
 
+  // ✅ UPDATED QUICK LINKS
   const quickLinks = [
     { name: "Home", href: "/" },
-    { name: "Mentorship", href: "/mentorship" },
-    { name: "Community", href: "/community" },
+    { name: "Accessibility Statement", href: "/accessibility" },
+    { name: "Terms & Conditions", href: "/terms" },
+    { name: "Privacy Policy", href: "/privacy-policy" },
+    { name: "Legal Disclaimer", href: "/disclaimer" },
+    { name: "Return & Refund Policy", href: "/refund-policy" },
     { name: "Broker Guide", href: "/#brokers" },
   ];
 

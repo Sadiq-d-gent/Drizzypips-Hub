@@ -9,8 +9,11 @@ import AOS from "aos";
 import "aos/dist/aos.css";
 
 import Index from "./pages/Index";
-import Mentorship from "./pages/Mentorship";
-import Community from "./pages/Community";
+import Accessibility from "./pages/Accessibility";
+import Terms from "./pages/Terms";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
+import LegalDisclaimer from "./pages/Disclaimer";
+import RefundPolicy from "./pages/RefundPolicy";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -33,10 +36,17 @@ const App = () => {
           <Sonner />
           <BrowserRouter>
             <Routes>
+              {/* Main Routes */}
               <Route path="/" element={<Index />} />
-              <Route path="/mentorship" element={<Mentorship />} />
-              <Route path="/community" element={<Community />} />
-              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+
+              {/* Legal / Informational Pages */}
+              <Route path="/accessibility" element={<Accessibility />} />
+              <Route path="/terms" element={<Terms />} />
+              <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+              <Route path="/disclaimer" element={<LegalDisclaimer />} />
+              <Route path="/refund-policy" element={<RefundPolicy />} />
+
+              {/* Catch-all for 404 */}
               <Route path="*" element={<NotFound />} />
             </Routes>
           </BrowserRouter>
