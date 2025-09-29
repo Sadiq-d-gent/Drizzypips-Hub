@@ -16,8 +16,8 @@ const RefundPolicy: React.FC = () => {
             <li><strong>Digital Products:</strong> All sales are final and non-refundable once accessed or delivered.</li>
             <li>
               <strong>Exceptional Cases:</strong> If you believe you are entitled to a refund, contact us within 7 days at{" "}
-              <a href="mailto:your@email.com" className="text-primary underline">
-                your@email.com
+              <a href="mailto:Drizzypips@gmail.com" className="text-primary underline">
+                Drizzypips@gmail.com
               </a>.
             </li>
           </ul>
