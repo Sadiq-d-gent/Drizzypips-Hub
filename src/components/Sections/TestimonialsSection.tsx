@@ -69,6 +69,13 @@ const TestimonialsSection = () => {
       name: "",
       role: "Having Fun",
     },
+    {
+      id: 205,
+      src: "/videos/vid5.mp4",
+      description: "A clip of mentorship session with Drizzypips teaching students his proven and profitable trading strategy.",
+      name: "Drizzypips",
+      role: "Trade with proven & profitable trading strategy",
+    },
   ];
 
   const testimonials = [
