@@ -1,11 +1,10 @@
 import { MessageCircle } from "lucide-react";
+import { consultationWhatsAppMessage } from "@/lib/constants/homepage";
+import { openWhatsApp } from "@/lib/whatsapp";
 
 const WhatsAppButton = () => {
   const handleWhatsAppClick = () => {
-    const phoneNumber = "+2349035853860"; // Replace with actual WhatsApp number
-    const message = encodeURIComponent("Hi! I'm interested in your trading mentorship program.");
-    const whatsappUrl = `https://wa.me/${phoneNumber}?text=${message}`;
-    window.open(whatsappUrl, "_blank");
+    openWhatsApp(consultationWhatsAppMessage);
   };
 
   return (

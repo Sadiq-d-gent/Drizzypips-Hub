@@ -1,6 +1,13 @@
+import { Instagram, Mail, MessageCircle, TrendingUp } from "lucide-react";
 import { Link } from "react-router-dom";
-import { Instagram, MessageCircle, TrendingUp, Mail } from "lucide-react";
+
 import { Button } from "@/components/ui/button";
+import {
+  consultationWhatsAppMessage,
+  supportWhatsAppNumber,
+  telegramCommunityUrl,
+} from "@/lib/constants/homepage";
+import { createWhatsAppUrl } from "@/lib/whatsapp";
 
 const Footer = () => {
   const socialLinks = [
@@ -14,67 +21,73 @@ const Footer = () => {
       name: "TikTok",
       icon: TrendingUp,
       href: "https://tiktok.com/@drizzypips",
-      color: "hover:text-black dark:hover:text-white",
+      color: "hover:text-foreground",
     },
     {
       name: "WhatsApp",
       icon: MessageCircle,
-      href: "https://wa.me/+2349035853860?text=Hi%20Drizzypips,%20I'm%20interested%20in%20your%20mentorship%20program", 
+      href: createWhatsAppUrl(consultationWhatsAppMessage, supportWhatsAppNumber),
       color: "hover:text-success",
+    },
+    {
+      name: "Telegram",
+      icon: MessageCircle,
+      href: telegramCommunityUrl,
+      color: "hover:text-primary",
     },
   ];
 
-  // ✅ UPDATED QUICK LINKS
   const quickLinks = [
     { name: "Home", href: "/" },
+    { name: "Mentorship", href: "/mentorship" },
+    { name: "Signals", href: "/signals" },
+    { name: "Telegram Channel", href: "/telegram" },
+    { name: "Broker", href: "/broker" },
+    { name: "FAQ", href: "/#faq" },
     { name: "Accessibility Statement", href: "/accessibility" },
     { name: "Terms & Conditions", href: "/terms" },
     { name: "Privacy Policy", href: "/privacy-policy" },
     { name: "Legal Disclaimer", href: "/disclaimer" },
     { name: "Return & Refund Policy", href: "/refund-policy" },
-    { name: "Broker Guide", href: "/#brokers" },
   ];
 
   return (
-    <footer className="bg-card border-t border-border">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-          {/* Brand */}
-          <div className="col-span-1 md:col-span-2">
+    <footer className="border-t border-border bg-card">
+      <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
+        <div className="grid grid-cols-1 gap-10 md:grid-cols-4">
+          <div className="md:col-span-2">
             <Link
               to="/"
-              className="flex items-center space-x-2 font-bold text-xl text-primary mb-4"
+              className="mb-4 flex items-center space-x-2 text-xl font-bold text-primary"
             >
-              <div className="w-8 h-8 bg-gradient-primary rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-sm">DP</span>
+              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-primary text-sm font-bold text-white">
+                DP
               </div>
-              <span>Drizzypips</span>
+              <span>Drizzypips Hub</span>
             </Link>
-            <p className="text-muted-foreground text-sm max-w-md mb-6">
-              Master Forex trading with expert mentorship, live trading sessions, 
-              and proven strategies. Join thousands of successful traders who've 
-              transformed their financial future.
+            <p className="mb-6 max-w-md text-sm leading-7 text-muted-foreground">
+              A premium mentorship platform for learning trading with structure, practical
+              guidance, and direct support while the full student flow is built.
             </p>
             <div className="flex items-center space-x-2">
               <Mail className="h-4 w-4 text-muted-foreground" />
               <a
                 href="mailto:contact@drizzypips.com"
-                className="text-sm text-muted-foreground hover:text-primary transition-colors"
+                className="text-sm text-muted-foreground transition-colors hover:text-primary"
               >
                 contact@drizzypips.com
               </a>
             </div>
           </div>
 
-          {/* Quick Links */}
           <div>
-            <h3 className="font-semibold text-foreground mb-4">Quick Links</h3>
+            <h3 className="mb-4 font-semibold text-foreground">Quick Links</h3>
             <ul className="space-y-2">
               {quickLinks.map((link) => (
                 <li key={link.name}>
                   <Link
                     to={link.href}
-                    className="text-sm text-muted-foreground hover:text-primary transition-colors"
+                    className="text-sm text-muted-foreground transition-colors hover:text-primary"
                   >
                     {link.name}
                   </Link>
@@ -83,12 +96,12 @@ const Footer = () => {
             </ul>
           </div>
 
-          {/* Connect */}
           <div>
-            <h3 className="font-semibold text-foreground mb-4">Connect With Us</h3>
+            <h3 className="mb-4 font-semibold text-foreground">Connect</h3>
             <div className="flex flex-col space-y-3">
               {socialLinks.map((social) => {
-                const IconComponent = social.icon;
+                const Icon = social.icon;
+
                 return (
                   <a
                     key={social.name}
@@ -97,36 +110,29 @@ const Footer = () => {
                     rel="noopener noreferrer"
                     className={`flex items-center space-x-2 text-sm text-muted-foreground transition-colors ${social.color}`}
                   >
-                    <IconComponent className="h-4 w-4" />
+                    <Icon className="h-4 w-4" />
                     <span>{social.name}</span>
                   </a>
                 );
               })}
-              
-              <Button
-                asChild
-                className="btn-premium mt-4"
-              >
+
+              <Button asChild className="btn-premium mt-4">
                 <a
-                  href="https://wa.me/+2349035853860?text=Hi%20Drizzypips,%20I'm%20interested%20in%20your%20mentorship%20program"
+                  href={createWhatsAppUrl(consultationWhatsAppMessage, supportWhatsAppNumber)}
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  <MessageCircle className="h-4 w-4 mr-2" />
-                  Contact Mentor
+                  <MessageCircle className="h-4 w-4" />
+                  Contact Support
                 </a>
               </Button>
             </div>
           </div>
         </div>
 
-        <div className="border-t border-border mt-8 pt-8 flex flex-col md:flex-row justify-between items-center">
-          <p className="text-sm text-muted-foreground">
-            © 2024 Drizzypips. All rights reserved.
-          </p>
-          <p className="text-sm text-muted-foreground mt-2 md:mt-0">
-            Professional Forex Mentorship & Trading Education
-          </p>
+        <div className="mt-8 flex flex-col items-center justify-between gap-2 border-t border-border pt-8 md:flex-row">
+          <p className="text-sm text-muted-foreground">© 2026 Drizzypips. All rights reserved.</p>
+          <p className="text-sm text-muted-foreground">Professional forex mentorship platform</p>
         </div>
       </div>
     </footer>

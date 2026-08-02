@@ -9,6 +9,10 @@ import AOS from "aos";
 import "aos/dist/aos.css";
 
 import Index from "./pages/Index";
+import Mentorship from "./pages/Mentorship";
+import Signals from "./pages/Signals";
+import Telegram from "./pages/Telegram";
+import Broker from "./pages/Broker";
 import Accessibility from "./pages/Accessibility";
 import Terms from "./pages/Terms";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
@@ -38,6 +42,10 @@ const App = () => {
             <Routes>
               {/* Main Routes */}
               <Route path="/" element={<Index />} />
+              <Route path="/mentorship" element={<Mentorship />} />
+              <Route path="/signals" element={<Signals />} />
+              <Route path="/telegram" element={<Telegram />} />
+              <Route path="/broker" element={<Broker />} />
 
               {/* Legal / Informational Pages */}
               <Route path="/accessibility" element={<Accessibility />} />

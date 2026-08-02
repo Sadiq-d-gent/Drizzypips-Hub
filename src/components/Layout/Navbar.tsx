@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Menu, X, Moon, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
 import { Button } from "@/components/ui/button";
+import { homepageNavItems } from "@/lib/constants/homepage";
 import logoImage from "@/assets/drizzypips-logo.jpg";
 
 const Navbar = () => {
@@ -10,6 +11,7 @@ const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
   const { theme, setTheme } = useTheme();
   const location = useLocation();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -21,23 +23,26 @@ const Navbar = () => {
 
   const toggleMenu = () => setIsOpen(!isOpen);
 
-  const navItems = [
-    { name: "Home", href: "#hero" },
-    { name: "Mentor", href: "#mentor" },
-    { name: "Testimonials", href: "#testimonials" },
-    { name: "Brokers", href: "#brokers" },
-    { name: "Pricing", href: "#pricing" },
-  ];
+  const handleInternalNavigation = (href: string) => {
+    if (href.startsWith("#")) {
+      const sectionId = href.replace("#", "");
 
-  const scrollToSection = (sectionId: string) => {
-    if (location.pathname !== "/") {
-      window.location.href = `/#${sectionId}`;
-    } else {
-      const element = document.getElementById(sectionId);
-      element?.scrollIntoView({ behavior: "smooth" });
+      if (location.pathname !== "/") {
+        navigate(`/${href}`);
+      } else {
+        const element = document.getElementById(sectionId);
+        element?.scrollIntoView({ behavior: "smooth" });
+      }
+
+      setIsOpen(false);
+      return;
     }
+
+    navigate(href);
     setIsOpen(false);
   };
+
+  const isActiveRoute = (href: string) => href !== "/" && location.pathname === href;
 
   return (
     <nav
@@ -66,15 +71,31 @@ const Navbar = () => {
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-8">
-            {navItems.map((item) => (
-              <button
-                key={item.name}
-                onClick={() => scrollToSection(item.href.substring(1))}
-                className="font-medium transition-colors hover:text-primary text-foreground"
-              >
-                {item.name}
-              </button>
-            ))}
+            {homepageNavItems.map((item) =>
+              item.external ? (
+                <a
+                  key={item.name}
+                  href={item.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="font-medium text-foreground transition-colors hover:text-primary"
+                >
+                  {item.name}
+                </a>
+              ) : (
+                <button
+                  key={item.name}
+                  type="button"
+                  onClick={() => handleInternalNavigation(item.href)}
+                  aria-current={isActiveRoute(item.href) ? "page" : undefined}
+                  className={`font-medium transition-colors hover:text-primary ${
+                    isActiveRoute(item.href) ? "text-primary" : "text-foreground"
+                  }`}
+                >
+                  {item.name}
+                </button>
+              ),
+            )}
             
             <Button
               variant="ghost"
@@ -88,8 +109,8 @@ const Navbar = () => {
             </Button>
 
             <Button
-              onClick={() => scrollToSection("pricing")}
-              className="btn-premium"
+              onClick={() => handleInternalNavigation("/mentorship")}
+              className="btn-premium min-h-11"
             >
               Join Mentorship
             </Button>
@@ -122,21 +143,35 @@ const Navbar = () => {
         {isOpen && (
           <div className="md:hidden bg-background/95 backdrop-blur-md border-t border-border">
             <div className="px-2 pt-2 pb-3 space-y-1">
-              {navItems.map((item) => (
-                <button
-                  key={item.name}
-                  onClick={() => {
-                    scrollToSection(item.href.substring(1));
-                    setIsOpen(false);
-                  }}
-                  className="block w-full text-left px-3 py-2 text-base font-medium transition-colors hover:text-primary text-foreground"
-                >
-                  {item.name}
-                </button>
-              ))}
+              {homepageNavItems.map((item) =>
+                item.external ? (
+                  <a
+                    key={item.name}
+                    href={item.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={() => setIsOpen(false)}
+                    className="block w-full rounded-lg px-3 py-3 text-left text-base font-medium text-foreground transition-colors hover:bg-muted hover:text-primary"
+                  >
+                    {item.name}
+                  </a>
+                ) : (
+                  <button
+                    key={item.name}
+                    type="button"
+                    onClick={() => handleInternalNavigation(item.href)}
+                    aria-current={isActiveRoute(item.href) ? "page" : undefined}
+                    className={`block w-full rounded-lg px-3 py-3 text-left text-base font-medium transition-colors hover:bg-muted hover:text-primary ${
+                      isActiveRoute(item.href) ? "text-primary" : "text-foreground"
+                    }`}
+                  >
+                    {item.name}
+                  </button>
+                ),
+              )}
               <Button
-                onClick={() => scrollToSection("pricing")}
-                className="btn-premium w-full mt-4"
+                onClick={() => handleInternalNavigation("/mentorship")}
+                className="btn-premium mt-4 w-full"
               >
                 Join Mentorship
               </Button>
