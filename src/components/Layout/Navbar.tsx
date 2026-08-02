@@ -17,7 +17,7 @@ const Navbar = () => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 20);
     };
-    window.addEventListener("scroll", handleScroll);
+    window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
@@ -46,10 +46,9 @@ const Navbar = () => {
 
   return (
     <nav
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        scrolled
-          ? "bg-background/95 backdrop-blur-md border-b border-border shadow-lg"
-          : "bg-transparent"
+      aria-label="Primary navigation"
+      className={`fixed top-0 left-0 right-0 z-50 border-b border-border bg-background/95 backdrop-blur-md transition-all duration-300 ${
+        scrolled ? "shadow-lg" : "shadow-sm"
       }`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -83,17 +82,16 @@ const Navbar = () => {
                   {item.name}
                 </a>
               ) : (
-                <button
+                <Link
                   key={item.name}
-                  type="button"
-                  onClick={() => handleInternalNavigation(item.href)}
+                  to={item.href}
                   aria-current={isActiveRoute(item.href) ? "page" : undefined}
                   className={`font-medium transition-colors hover:text-primary ${
                     isActiveRoute(item.href) ? "text-primary" : "text-foreground"
                   }`}
                 >
                   {item.name}
-                </button>
+                </Link>
               ),
             )}
             
@@ -123,9 +121,11 @@ const Navbar = () => {
               size="icon"
               onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
               className="w-9 h-9"
+              aria-label="Toggle theme"
             >
               <Sun className="h-4 w-4 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
               <Moon className="absolute h-4 w-4 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+              <span className="sr-only">Toggle theme</span>
             </Button>
             
             <Button
@@ -133,6 +133,9 @@ const Navbar = () => {
               size="icon"
               onClick={toggleMenu}
               className="w-9 h-9"
+              aria-label={isOpen ? "Close navigation menu" : "Open navigation menu"}
+              aria-expanded={isOpen}
+              aria-controls="mobile-navigation"
             >
               {isOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
             </Button>
@@ -141,7 +144,7 @@ const Navbar = () => {
 
         {/* Mobile Navigation */}
         {isOpen && (
-          <div className="md:hidden bg-background/95 backdrop-blur-md border-t border-border">
+          <div id="mobile-navigation" className="md:hidden bg-background/95 backdrop-blur-md border-t border-border">
             <div className="px-2 pt-2 pb-3 space-y-1">
               {homepageNavItems.map((item) =>
                 item.external ? (
@@ -156,17 +159,17 @@ const Navbar = () => {
                     {item.name}
                   </a>
                 ) : (
-                  <button
+                  <Link
                     key={item.name}
-                    type="button"
-                    onClick={() => handleInternalNavigation(item.href)}
+                    to={item.href}
+                    onClick={() => setIsOpen(false)}
                     aria-current={isActiveRoute(item.href) ? "page" : undefined}
                     className={`block w-full rounded-lg px-3 py-3 text-left text-base font-medium transition-colors hover:bg-muted hover:text-primary ${
                       isActiveRoute(item.href) ? "text-primary" : "text-foreground"
                     }`}
                   >
                     {item.name}
-                  </button>
+                  </Link>
                 ),
               )}
               <Button

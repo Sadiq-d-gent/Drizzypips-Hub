@@ -1,11 +1,11 @@
-import { ExternalLink, ShieldCheck, Sparkles, TrendingUp, WalletCards } from "lucide-react";
+import { ExternalLink } from "lucide-react";
 
 import PublicPageLayout from "@/components/Layout/PublicPageLayout";
 import SectionHeading from "@/components/shared/SectionHeading";
 import SectionShell from "@/components/shared/SectionShell";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { brokerAffiliateUrl } from "@/lib/constants/homepage";
+import { brokerAffiliateUrl, brokerBenefits } from "@/lib/constants/homepage";
 import exnessLogo from "@/assets/exness-logo.jpg";
 
 const Broker = () => {
@@ -36,12 +36,7 @@ const Broker = () => {
               </div>
 
               <div className="mt-8 grid gap-4 sm:grid-cols-2">
-                {[
-                  { icon: TrendingUp, label: "Fast execution" },
-                  { icon: WalletCards, label: "Instant withdrawals" },
-                  { icon: ShieldCheck, label: "Mentor recommended" },
-                  { icon: Sparkles, label: "Beginner friendly" },
-                ].map((item) => {
+                {brokerBenefits.map((item) => {
                   const Icon = item.icon;
 
                   return (

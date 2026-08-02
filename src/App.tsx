@@ -8,6 +8,7 @@ import { ThemeProvider } from "next-themes";
 import AOS from "aos";
 import "aos/dist/aos.css";
 
+import RouteScrollManager from "@/components/Layout/RouteScrollManager";
 import Index from "./pages/Index";
 import Mentorship from "./pages/Mentorship";
 import Signals from "./pages/Signals";
@@ -39,6 +40,7 @@ const App = () => {
           <Toaster />
           <Sonner />
           <BrowserRouter>
+            <RouteScrollManager />
             <Routes>
               {/* Main Routes */}
               <Route path="/" element={<Index />} />
