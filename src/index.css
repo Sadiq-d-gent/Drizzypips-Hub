@@ -20,7 +20,11 @@
     --success: 158 84% 39%;
     --success-foreground: 0 0% 100%;
     --success-muted: 156 72% 92%;
-    
+
+    --warning: 38 92% 50%;
+    --warning-foreground: 26 83% 14%;
+    --warning-muted: 48 96% 89%;
+
     --primary: 221 83% 53%;
     --primary-foreground: 0 0% 100%;
     --primary-hover: 224 76% 48%;
@@ -64,7 +68,11 @@
     --success: 158 84% 39%;
     --success-foreground: 0 0% 100%;
     --success-muted: 158 64% 16%;
-    
+
+    --warning: 38 92% 50%;
+    --warning-foreground: 26 83% 14%;
+    --warning-muted: 32 81% 18%;
+
     --primary: 217 91% 60%;
     --primary-foreground: 0 0% 100%;
     --primary-hover: 213 94% 68%;
@@ -199,12 +207,3 @@
   }
 }
 
-@layer base {
-  * {
-    @apply border-border;
-  }
-
-  body {
-    @apply bg-background text-foreground;
-  }
-}

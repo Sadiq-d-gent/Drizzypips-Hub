@@ -1,0 +1,74 @@
+-- 006_harden_admins_grants.sql
+--
+-- Phase 3.1 hardening: state explicitly that the anon role holds no privilege on
+-- public.admins.
+--
+-- WHAT THIS IS, AND WHAT IT IS NOT
+--   This is an explicit statement of an invariant, not remediation of a confirmed
+--   exposure. Reading the live ACL directly:
+--
+--     admins=  postgres=arwdDxtm/postgres
+--              authenticated=arwdDxtm/postgres
+--              service_role=arwdDxtm/postgres
+--
+--   anon is absent, and was absent before this migration ran. Nothing was leaking,
+--   and the revoke below changes no role's effective access.
+--
+--   The reason to write it down anyway is that nothing in 001 *said* so. public.admins
+--   is created there with RLS enabled and a single policy scoped `to authenticated
+--   using (auth_id = auth.uid())`, and its anon posture was left to whatever the
+--   project's default happened to be. Every table added in Phase 3 revokes anon
+--   explicitly; admins was the one that relied on the default instead. Defaults are
+--   not invariants — they change with project settings and with Supabase's own
+--   behaviour over time — so the intended posture is asserted here in a migration
+--   that will be re-applied with the rest of the schema.
+--
+--   An earlier draft of this header claimed the readiness check had observed anon
+--   receiving HTTP 200 with an empty array from /rest/v1/admins. That was a
+--   misreading of the probe output; the direct ACL check above is authoritative.
+--
+-- WHY IT IS WORTH ASSERTING ANYWAY
+--   The revoke is a second line of defence that costs nothing. With anon holding no
+--   privilege, a future migration that accidentally adds a permissive policy — or
+--   disables RLS during a debugging session — still cannot leak the row, because the
+--   privilege is not there to use. Relying on RLS alone means one mistaken policy is
+--   the whole distance between "closed" and "every admin's email address".
+--
+--   This matters now specifically because Phase 4 (Admin Panel) is the point at
+--   which this table stops being empty. An empty table proves nothing about
+--   whether a policy would expose a populated one, and this migration lands before
+--   the rows do.
+--
+-- WHAT THIS DOES NOT DO
+--   * It does not create, drop or alter any table, column, policy or function.
+--   * It does not change any behaviour for authenticated admins: the existing
+--     "Admins can read their own profile" policy is untouched, and `authenticated`
+--     keeps its grant.
+--   * public.is_admin() is SECURITY DEFINER and runs as its owner, so revoking
+--     anon's privilege does not affect it. Every RLS policy that calls is_admin()
+--     continues to work unchanged.
+--
+-- Migration 001 is deliberately left alone. It has already been applied, so editing
+-- it would change the recorded history without changing any live database.
+
+revoke all on public.admins from anon;
+
+-- =============================================================================
+-- VERIFICATION
+-- =============================================================================
+-- Confirm anon holds nothing (expect zero rows, both before and after — this
+-- migration asserts the state rather than changing it):
+--
+--   select grantee, privilege_type
+--   from information_schema.role_table_grants
+--   where table_schema = 'public' and table_name = 'admins' and grantee = 'anon';
+--
+-- Confirm authenticated still has its grant (expect SELECT):
+--
+--   select grantee, privilege_type
+--   from information_schema.role_table_grants
+--   where table_schema = 'public' and table_name = 'admins' and grantee = 'authenticated';
+--
+-- An anon request to /rest/v1/admins returns HTTP 401, code 42501, "permission denied
+-- for table admins", matching enrollments / enrollment_status_history / admin_settings.
+-- =============================================================================
