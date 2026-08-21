@@ -53,58 +53,60 @@ const App = () => {
         <TooltipProvider>
           <Toaster />
           <Sonner />
-          <BrowserRouter>
-            <RouteScrollManager />
-            <Routes>
-              {/* Main Routes */}
-              <Route path="/" element={<Index />} />
-              <Route path="/mentorship" element={<Mentorship />} />
-              <Route path="/courses/:slug" element={<CourseDetail />} />
-              <Route path="/courses/:slug/enroll" element={<CourseEnrollment />} />
-              <Route path="/enrollment/:accessToken" element={<EnrollmentConfirmation />} />
-              <Route path="/signals" element={<Signals />} />
-              <Route path="/telegram" element={<Telegram />} />
-              <Route path="/broker" element={<Broker />} />
+         {/*
+<BrowserRouter>
+  <RouteScrollManager />
+  <Routes>
+    <Route path="/" element={<Index />} />
+    <Route path="/mentorship" element={<Mentorship />} />
+    <Route path="/signals" element={<Signals />} />
+    <Route path="/telegram" element={<Telegram />} />
+    <Route path="/broker" element={<Broker />} />
 
-              {/* Legal / Informational Pages */}
-              <Route path="/accessibility" element={<Accessibility />} />
-              <Route path="/terms" element={<Terms />} />
-              <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-              <Route path="/disclaimer" element={<LegalDisclaimer />} />
-              <Route path="/refund-policy" element={<RefundPolicy />} />
+    <Route path="/accessibility" element={<Accessibility />} />
+    <Route path="/terms" element={<Terms />} />
+    <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+    <Route path="/disclaimer" element={<LegalDisclaimer />} />
+    <Route path="/refund-policy" element={<RefundPolicy />} />
 
-              {/*
-                Admin area. Login sits outside the guard — guarding it would redirect an
-                administrator away from the page they need in order to sign in.
+    <Route path="*" element={<NotFound />} />
+  </Routes>
+</BrowserRouter>
+*/}
 
-                The pages below nest under a layout route so the sidebar is not rebuilt on
-                every navigation. AdminGuard is UX only: each page's queries are gated in
-                the database by public.is_admin(), so bypassing the guard in the browser
-                yields an empty panel rather than access.
-              */}
-              <Route path="/admin/login" element={<AdminLogin />} />
-              <Route
-                path="/admin"
-                element={
-                  <AdminGuard>
-                    <AdminLayout />
-                  </AdminGuard>
-                }
-              >
-                <Route index element={<AdminDashboard />} />
-                <Route path="enrollments" element={<AdminEnrollments />} />
-                <Route path="enrollments/:id" element={<AdminEnrollmentDetail />} />
-                <Route path="courses" element={<AdminCourses />} />
-                <Route path="courses/new" element={<AdminCourseNew />} />
-                <Route path="courses/:id" element={<AdminCourseEdit />} />
-                <Route path="settings" element={<AdminSettings />} />
-                <Route path="account" element={<AdminAccount />} />
-              </Route>
+<div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-800 flex items-center justify-center px-6">
+  <div className="max-w-2xl w-full bg-white rounded-3xl shadow-2xl p-10 text-center">
+    <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-blue-100 flex items-center justify-center text-4xl">
+      🚧
+    </div>
 
-              {/* Catch-all for 404 */}
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </BrowserRouter>
+    <h1 className="text-4xl font-bold text-slate-900 mb-4">
+      Drizzypips
+    </h1>
+
+    <h2 className="text-2xl font-semibold text-slate-700 mb-4">
+      We're Upgrading Your Experience
+    </h2>
+
+    <p className="text-slate-600 leading-8 mb-8">
+      Our website is currently undergoing scheduled maintenance while we
+      introduce exciting new features and improvements to better serve our
+      students.
+    </p>
+
+    <div className="inline-flex items-center gap-3 bg-blue-50 text-blue-700 px-6 py-3 rounded-full font-medium">
+      <span className="w-3 h-3 rounded-full bg-blue-600 animate-pulse"></span>
+      Maintenance in Progress
+    </div>
+
+    <div className="mt-10 border-t pt-6 text-sm text-slate-500">
+      <p>Thank you for your patience.</p>
+      <p className="mt-2">
+        We'll be back online as soon as the updates are complete.
+      </p>
+    </div>
+  </div>
+</div>
         </TooltipProvider>
       </ThemeProvider>
     </QueryClientProvider>
