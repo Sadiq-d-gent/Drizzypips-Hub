@@ -182,6 +182,28 @@ export const SETTINGS_SHORT_TEXT_MAX = 200;
 export const SETTINGS_LONG_TEXT_MAX = 2000;
 
 /**
+ * Caps on the three hero figures.
+ *
+ * Tighter than SETTINGS_SHORT_TEXT_MAX because these two are the only settings fields whose
+ * length is a layout constraint rather than a courtesy: the hero renders the value at
+ * `text-3xl` inside a three-column grid, so "1,000+" fits and a sentence does not. Like
+ * every other maximum in this file, `website_settings.hero_stat_*` is plain `text` with no
+ * check — nothing rejects a longer value server-side.
+ */
+export const HERO_STAT_VALUE_MAX = 12;
+export const HERO_STAT_LABEL_MAX = 32;
+
+/**
+ * Cap on the countdown heading.
+ *
+ * A layout constraint like the two above, not a mirrored one: the heading sits on one line
+ * above four number cells inside the hero card, and at 375px that line is about 40 characters
+ * wide before it wraps to a third row and starts pushing the CTAs down. `countdown_title` is
+ * plain `text` in 012 with no check, so nothing rejects a longer value server-side.
+ */
+export const COUNTDOWN_TITLE_MAX = 60;
+
+/**
  * Minimum length for a *new* administrator password.
  *
  * Deliberately asymmetric with adminLoginSchema, which has no length rule at all — see

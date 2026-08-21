@@ -8,7 +8,7 @@
  *
  *   supabase gen types typescript --project-id <project-ref> > src/types/database.types.ts
  *
- * Covers migrations 001-010. Everything below this comment is generator output.
+ * Covers migrations 001-011. Everything below this comment is generator output.
  */
 
 export type Json =
@@ -336,6 +336,87 @@ export type Database = {
           payment_instructions?: string
           review_window_hours?: number
           support_whatsapp_number?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      website_settings: {
+        Row: {
+          broker_description: string | null
+          broker_name: string | null
+          broker_url: string | null
+          contact_email: string | null
+          countdown_enabled: boolean
+          countdown_session_at: string | null
+          countdown_title: string | null
+          created_at: string
+          footer_copyright: string | null
+          footer_tagline: string | null
+          hero_stat_1_label: string | null
+          hero_stat_1_value: string | null
+          hero_stat_2_label: string | null
+          hero_stat_2_value: string | null
+          hero_stat_3_label: string | null
+          hero_stat_3_value: string | null
+          hero_subtitle: string | null
+          hero_title: string | null
+          id: boolean
+          instagram_url: string | null
+          signal_group_url: string | null
+          telegram_url: string | null
+          tiktok_url: string | null
+          updated_at: string
+        }
+        Insert: {
+          broker_description?: string | null
+          broker_name?: string | null
+          broker_url?: string | null
+          contact_email?: string | null
+          countdown_enabled?: boolean
+          countdown_session_at?: string | null
+          countdown_title?: string | null
+          created_at?: string
+          footer_copyright?: string | null
+          footer_tagline?: string | null
+          hero_stat_1_label?: string | null
+          hero_stat_1_value?: string | null
+          hero_stat_2_label?: string | null
+          hero_stat_2_value?: string | null
+          hero_stat_3_label?: string | null
+          hero_stat_3_value?: string | null
+          hero_subtitle?: string | null
+          hero_title?: string | null
+          id?: boolean
+          instagram_url?: string | null
+          signal_group_url?: string | null
+          telegram_url?: string | null
+          tiktok_url?: string | null
+          updated_at?: string
+        }
+        Update: {
+          broker_description?: string | null
+          broker_name?: string | null
+          broker_url?: string | null
+          contact_email?: string | null
+          countdown_enabled?: boolean
+          countdown_session_at?: string | null
+          countdown_title?: string | null
+          created_at?: string
+          footer_copyright?: string | null
+          footer_tagline?: string | null
+          hero_stat_1_label?: string | null
+          hero_stat_1_value?: string | null
+          hero_stat_2_label?: string | null
+          hero_stat_2_value?: string | null
+          hero_stat_3_label?: string | null
+          hero_stat_3_value?: string | null
+          hero_subtitle?: string | null
+          hero_title?: string | null
+          id?: boolean
+          instagram_url?: string | null
+          signal_group_url?: string | null
+          telegram_url?: string | null
+          tiktok_url?: string | null
           updated_at?: string
         }
         Relationships: []

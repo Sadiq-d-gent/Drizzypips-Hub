@@ -2,37 +2,56 @@ import { Instagram, Mail, MessageCircle, TrendingUp } from "lucide-react";
 import { Link } from "react-router-dom";
 
 import { Button } from "@/components/ui/button";
-import {
-  consultationWhatsAppMessage,
-  supportWhatsAppNumber,
-  telegramCommunityUrl,
-} from "@/lib/constants/homepage";
+import { usePaymentSettings } from "@/hooks/usePaymentSettings";
+import { useWebsiteContent } from "@/hooks/useWebsiteSettings";
+import { consultationWhatsAppMessage } from "@/lib/constants/homepage";
 import { createWhatsAppUrl } from "@/lib/whatsapp";
 
 const Footer = () => {
+  const content = useWebsiteContent();
+
+  /**
+   * The support number comes from `payment_settings`, not from `website_settings`.
+   *
+   * Deliberately not a column on the new table: this is the number a student contacts about a
+   * payment, it is already editable on the Payment details card, and a second copy would be a
+   * second source of truth for the one contact that matters after money has moved. Passing
+   * `undefined` when it is unset lets createWhatsAppUrl fall back to the compiled-in number,
+   * which is the same fallback the payment step uses.
+   *
+   * This query is shared with the enrollment flow under `paymentSettingsQueryKey`, so the
+   * footer being on every page warms the cache the payment step needs rather than adding a
+   * request of its own.
+   */
+  const paymentSettings = usePaymentSettings();
+  const supportWhatsAppUrl = createWhatsAppUrl(
+    consultationWhatsAppMessage,
+    paymentSettings.data?.support_whatsapp_number ?? undefined,
+  );
+
   const socialLinks = [
     {
       name: "Instagram",
       icon: Instagram,
-      href: "https://instagram.com/drizzypipsacademy",
+      href: content.instagramUrl,
       color: "hover:text-pink-500",
     },
     {
       name: "TikTok",
       icon: TrendingUp,
-      href: "https://tiktok.com/@drizzypips",
+      href: content.tiktokUrl,
       color: "hover:text-foreground",
     },
     {
       name: "WhatsApp",
       icon: MessageCircle,
-      href: createWhatsAppUrl(consultationWhatsAppMessage, supportWhatsAppNumber),
+      href: supportWhatsAppUrl,
       color: "hover:text-success",
     },
     {
       name: "Telegram",
       icon: MessageCircle,
-      href: telegramCommunityUrl,
+      href: content.telegramUrl,
       color: "hover:text-primary",
     },
   ];
@@ -66,16 +85,15 @@ const Footer = () => {
               <span>Drizzypips Hub</span>
             </Link>
             <p className="mb-6 max-w-md text-sm leading-7 text-muted-foreground">
-              A premium mentorship platform for learning trading with structure, practical
-              guidance, and direct support while the full student flow is built.
+              {content.footerTagline}
             </p>
             <div className="flex items-center space-x-2">
               <Mail className="h-4 w-4 text-muted-foreground" />
               <a
-                href="mailto:contact@drizzypips.com"
+                href={`mailto:${content.contactEmail}`}
                 className="text-sm text-muted-foreground transition-colors hover:text-primary"
               >
-                contact@drizzypips.com
+                {content.contactEmail}
               </a>
             </div>
           </div>
@@ -117,11 +135,7 @@ const Footer = () => {
               })}
 
               <Button asChild className="btn-premium mt-4">
-                <a
-                  href={createWhatsAppUrl(consultationWhatsAppMessage, supportWhatsAppNumber)}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
+                <a href={supportWhatsAppUrl} target="_blank" rel="noopener noreferrer">
                   <MessageCircle className="h-4 w-4" />
                   Contact Support
                 </a>
@@ -131,7 +145,7 @@ const Footer = () => {
         </div>
 
         <div className="mt-8 flex flex-col items-center justify-between gap-2 border-t border-border pt-8 md:flex-row">
-          <p className="text-sm text-muted-foreground">© 2026 Drizzypips. All rights reserved.</p>
+          <p className="text-sm text-muted-foreground">{content.footerCopyright}</p>
           <p className="text-sm text-muted-foreground">Professional forex mentorship platform</p>
         </div>
       </div>

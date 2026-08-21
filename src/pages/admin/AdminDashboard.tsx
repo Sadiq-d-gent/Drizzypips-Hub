@@ -1,4 +1,4 @@
-import { AlertTriangle, ArrowRight, Inbox } from "lucide-react";
+import { AlertTriangle, ArrowRight, BookOpen, Inbox } from "lucide-react";
 import { Link } from "react-router-dom";
 
 import AdminStateCard from "@/components/admin/AdminStateCard";
@@ -8,8 +8,13 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useAdminSession } from "@/hooks/useAdminSession";
 import { useRecentEnrollments } from "@/hooks/useAdminEnrollments";
+import { useAllCourses } from "@/hooks/useCourses";
 import { useEnrollmentStats } from "@/hooks/useEnrollmentStats";
-import { ADMIN_ENROLLMENTS_PATH, adminEnrollmentsByStatusPath } from "@/lib/admin/routes";
+import {
+  ADMIN_COURSES_PATH,
+  ADMIN_ENROLLMENTS_PATH,
+  adminEnrollmentsByStatusPath,
+} from "@/lib/admin/routes";
 
 /**
  * Admin dashboard.
@@ -23,7 +28,41 @@ const AdminDashboard = () => {
   const statsQuery = useEnrollmentStats();
   const recentQuery = useRecentEnrollments();
 
+  /**
+   * The catalogue is now what the homepage and the mentorship page render, so "nothing is
+   * published" is the one condition that makes the public site look broken while every
+   * enrollment number on this page still reads zero for a perfectly good reason. Worth a line
+   * here rather than only on the courses page an admin has no reason to open.
+   *
+   * `useAllCourses` rather than `useCourses`: an unpublished course is exactly what this row
+   * needs to be able to count.
+   */
+  const coursesQuery = useAllCourses();
+
   const pendingCount = statsQuery.data?.pendingReview ?? 0;
+
+  const renderCourseSummary = () => {
+    if (coursesQuery.isLoading) {
+      return "Checking the catalogue…";
+    }
+
+    if (coursesQuery.isError) {
+      return "Course counts didn't load.";
+    }
+
+    const courses = coursesQuery.data ?? [];
+    const publishedCount = courses.filter((course) => course.published).length;
+
+    if (courses.length === 0) {
+      return "No courses yet — students have nothing to enroll in until one is published.";
+    }
+
+    if (publishedCount === 0) {
+      return `${courses.length} ${courses.length === 1 ? "course" : "courses"} · none published, so none are visible to students`;
+    }
+
+    return `${courses.length} ${courses.length === 1 ? "course" : "courses"} · ${publishedCount} published`;
+  };
 
   return (
     <div className="mx-auto w-full max-w-6xl">
@@ -66,6 +105,21 @@ const AdminDashboard = () => {
         ) : (
           <EnrollmentStatsCards stats={statsQuery.data} isLoading={statsQuery.isLoading} />
         )}
+      </div>
+
+      <div className="mt-4 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-border bg-card px-5 py-4">
+        <div className="flex min-w-0 items-center gap-3">
+          <BookOpen className="h-5 w-5 shrink-0 text-primary" aria-hidden="true" />
+          <p className="text-sm text-muted-foreground" aria-live="polite">
+            {renderCourseSummary()}
+          </p>
+        </div>
+        <Link
+          to={ADMIN_COURSES_PATH}
+          className="text-sm text-primary underline-offset-4 hover:underline"
+        >
+          Manage courses
+        </Link>
       </div>
 
       <section className="mt-10" aria-labelledby="recent-submissions-heading">

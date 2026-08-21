@@ -10,8 +10,8 @@ const TestimonialsSection = () => {
     <SectionShell id="testimonials" className="bg-background">
       <SectionHeading
         eyebrow="Student stories"
-        title="Trust signals without the noise."
-        description="A premium homepage should feel credible, concise, and easy to scan across every screen size."
+        title="What students say."
+        description="In their own words."
       />
 
       <div className="mt-14 grid gap-6 md:grid-cols-3">

@@ -13,8 +13,8 @@ const FaqSection = () => {
     <SectionShell id="faq" className="bg-background">
       <SectionHeading
         eyebrow="FAQ"
-        title="Clear answers before the full platform flow arrives."
-        description="The homepage keeps expectations honest while setting up the next phases of the product."
+        title="Questions people ask before enrolling."
+        description="How the programs work, how paying works, and how to reach a person if you would rather ask first."
       />
 
       <div data-aos="fade-up" className="mx-auto mt-12 max-w-3xl rounded-3xl border border-border bg-card p-2 shadow-premium">

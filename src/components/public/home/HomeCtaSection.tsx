@@ -2,10 +2,13 @@ import { MessageCircle } from "lucide-react";
 
 import SectionShell from "@/components/shared/SectionShell";
 import { Button } from "@/components/ui/button";
-import { consultationWhatsAppMessage, telegramCommunityUrl } from "@/lib/constants/homepage";
+import { useWebsiteContent } from "@/hooks/useWebsiteSettings";
+import { consultationWhatsAppMessage } from "@/lib/constants/homepage";
 import { openWhatsApp } from "@/lib/whatsapp";
 
 const HomeCtaSection = () => {
+  const content = useWebsiteContent();
+
   return (
     <SectionShell className="bg-muted/30">
       <div
@@ -19,8 +22,8 @@ const HomeCtaSection = () => {
           Build your trading foundation with a mentor-led path.
         </h2>
         <p className="mx-auto mt-5 max-w-2xl text-base leading-8 text-slate-300 sm:text-lg">
-          Phase 1 keeps the experience simple: explore the offer, understand the value, and
-          contact support when you are ready.
+          Choose a program, enroll online, and pay by bank transfer. If you would rather ask
+          before committing, support is one message away.
         </p>
         <div className="mt-8 flex flex-col justify-center gap-4 sm:flex-row">
           <Button
@@ -38,7 +41,7 @@ const HomeCtaSection = () => {
             variant="outline"
             className="min-h-12 rounded-xl border-white/25 bg-white/10 px-7 text-white hover:bg-white hover:text-slate-950"
           >
-            <a href={telegramCommunityUrl} target="_blank" rel="noopener noreferrer">
+            <a href={content.telegramUrl} target="_blank" rel="noopener noreferrer">
               Join Telegram Channel
             </a>
           </Button>

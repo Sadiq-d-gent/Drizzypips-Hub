@@ -4,18 +4,25 @@ import { toast } from "sonner";
 import { adminSettingsQueryKey } from "@/hooks/useAdminSettings";
 import { enrollmentAvailabilityQueryKey } from "@/hooks/useEnrollmentAvailability";
 import { paymentSettingsQueryKey } from "@/hooks/usePaymentSettings";
-import type { PaymentSettingsInput, SiteSettingsInput } from "@/lib/validation/settings.schema";
+import { websiteSettingsQueryKey } from "@/hooks/useWebsiteSettings";
+import type {
+  PaymentSettingsInput,
+  SiteSettingsInput,
+  WebsiteSettingsInput,
+} from "@/lib/validation/settings.schema";
 import {
   SettingsError,
   saveAdminSettings,
   savePaymentSettings,
+  saveWebsiteSettings,
 } from "@/services/adminSettings.service";
 
 /**
  * Settings mutations.
  *
- * Two independent mutations, matching the two independent forms: saving bank details cannot
- * disturb the pause, and pausing cannot fail because an account number is blank.
+ * Three independent mutations, matching the three independent forms: saving bank details
+ * cannot disturb the pause, pausing cannot fail because an account number is blank, and
+ * correcting a Telegram link cannot be held up by either.
  */
 
 /**
@@ -72,6 +79,31 @@ export const useSaveSiteSettings = () => {
           ? "Settings saved. Enrollments are open."
           : "Settings saved. Enrollments are paused.",
       );
+    },
+    onError: (error) => {
+      toast.error(describeSettingsError(error));
+    },
+  });
+};
+
+/**
+ * Saves the public website copy.
+ *
+ * One invalidation is enough, and that is the point of `websiteSettingsQueryKey` being shared
+ * rather than admin-scoped: the same cache entry backs this form and every public page, so a
+ * corrected Telegram link reaches an already-open homepage tab without a reload.
+ *
+ * No second key here — unlike the site settings above, which also invalidate the public
+ * availability query because the pause is read through a different function.
+ */
+export const useSaveWebsiteSettings = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (input: WebsiteSettingsInput) => saveWebsiteSettings(input),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: websiteSettingsQueryKey });
+      toast.success("Website content saved. The public pages are updated.");
     },
     onError: (error) => {
       toast.error(describeSettingsError(error));

@@ -3,10 +3,14 @@ import { ExternalLink } from "lucide-react";
 import SectionHeading from "@/components/shared/SectionHeading";
 import SectionShell from "@/components/shared/SectionShell";
 import { Button } from "@/components/ui/button";
-import { brokerAffiliateUrl, brokerBenefits } from "@/lib/constants/homepage";
+import { useWebsiteContent } from "@/hooks/useWebsiteSettings";
+import { brokerBenefits } from "@/lib/constants/homepage";
 import exnessLogo from "@/assets/exness-logo.jpg";
 
 const BrokerSection = () => {
+  /** Name, description and link are editable; the logo and the benefit chips are not. */
+  const content = useWebsiteContent();
+
   return (
     <SectionShell id="broker" className="bg-muted/30">
       <div className="grid items-center gap-10 lg:grid-cols-[0.95fr_1.05fr]">
@@ -14,7 +18,7 @@ const BrokerSection = () => {
           align="left"
           eyebrow="Featured broker"
           title="A simple broker recommendation for new mentees."
-          description="The broker section remains available on the homepage while the future admin-managed broker page is reserved for a later phase."
+          description="Every student needs a broker account before placing a trade. This is the one recommended for straightforward setup and reliable withdrawals — the broker page has the full rundown."
           className="mx-0"
         />
 
@@ -24,14 +28,18 @@ const BrokerSection = () => {
         >
           <div className="flex flex-col gap-6 sm:flex-row sm:items-center">
             <div className="flex h-24 w-24 shrink-0 items-center justify-center rounded-3xl border border-border bg-white shadow-sm">
-              <img src={exnessLogo} alt="Exness logo" className="h-16 w-16 object-contain" />
+              {/*
+                Decorative: the broker's name is the heading immediately beside it, so a
+                screen reader would read it twice. `alt=""` also avoids naming a broker the
+                image may no longer be — the name is editable from /admin/settings while this
+                logo is compiled in, which is the tradeoff the plan accepted rather than
+                building an upload path for one image.
+              */}
+              <img src={exnessLogo} alt="" aria-hidden="true" className="h-16 w-16 object-contain" />
             </div>
             <div>
-              <h3 className="text-2xl font-bold text-foreground">Exness</h3>
-              <p className="mt-2 leading-7 text-muted-foreground">
-                A globally used broker recommended for students who need straightforward account
-                setup, fast execution, and reliable withdrawals.
-              </p>
+              <h3 className="text-2xl font-bold text-foreground">{content.brokerName}</h3>
+              <p className="mt-2 leading-7 text-muted-foreground">{content.brokerDescription}</p>
             </div>
           </div>
 
@@ -51,7 +59,7 @@ const BrokerSection = () => {
           </div>
 
           <Button asChild className="btn-premium mt-8 w-full sm:w-auto">
-            <a href={brokerAffiliateUrl} target="_blank" rel="noopener noreferrer">
+            <a href={content.brokerUrl} target="_blank" rel="noopener noreferrer">
               Open Broker Account
               <ExternalLink className="h-4 w-4" />
             </a>

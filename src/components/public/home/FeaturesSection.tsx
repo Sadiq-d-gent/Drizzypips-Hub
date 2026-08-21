@@ -9,7 +9,7 @@ const FeaturesSection = () => {
       <SectionHeading
         eyebrow="Why Drizzypips Hub"
         title="A calmer, cleaner way to start trading education."
-        description="The new homepage introduces the premium product direction while keeping today’s contact paths simple and dependable."
+        description="What you learn, how you are supported, and how the money side works — set out plainly before you commit."
       />
 
       <div className="mt-14 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">

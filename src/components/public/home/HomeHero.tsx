@@ -1,11 +1,26 @@
 import { MessageCircle, PlayCircle, ShieldCheck } from "lucide-react";
+import { Link } from "react-router-dom";
 
+import MentorshipCountdown from "@/components/public/home/MentorshipCountdown";
 import { Button } from "@/components/ui/button";
-import { heroPrimaryCta, heroStats, telegramCommunityUrl } from "@/lib/constants/homepage";
+import { useWebsiteContent } from "@/hooks/useWebsiteSettings";
+import { heroPrimaryCta } from "@/lib/constants/homepage";
 import heroTradingImage from "@/assets/hero-trading.jpg";
 
 const HomeHero = () => {
   const PrimaryIcon = heroPrimaryCta.icon;
+
+  /**
+   * Headline, paragraph, the three figures, the Telegram link and the session countdown come
+   * from `website_settings` when set, and from the compiled-in defaults otherwise. There is no
+   * loading branch on purpose: the resolver returns the shipped copy while the query is in
+   * flight, so the hero paints once with real words rather than flashing empty. See
+   * useWebsiteContent.
+   *
+   * The countdown is the one part with no default — `content.countdown` is null until an
+   * administrator schedules a session, and null renders nothing.
+   */
+  const content = useWebsiteContent();
 
   return (
     <section
@@ -32,19 +47,24 @@ const HomeHero = () => {
             </div>
 
             <h1 className="text-4xl font-bold tracking-tight sm:text-6xl lg:text-7xl">
-              Trade with structure, confidence, and a mentor-led path.
+              {content.heroTitle}
             </h1>
             <p className="mt-6 max-w-2xl text-lg leading-8 text-slate-300 sm:text-xl">
-              Drizzypips Hub is evolving into a polished mentorship platform where students can
-              discover programs, learn the process, and connect with support without friction.
+              {content.heroSubtitle}
             </p>
 
             <div className="mt-9 flex flex-col gap-4 sm:flex-row">
               <Button asChild size="lg" className="btn-premium min-h-12 rounded-xl px-7">
-                <a href={heroPrimaryCta.href}>
+                {/*
+                  A router Link to the catalogue, not an anchor to a section further down this
+                  page. The section below now lists real published courses, and the visitor who
+                  clicks "Explore Mentorship" wants the full list and the enrollment flow behind
+                  it — an in-page jump left them on a page with nowhere to go.
+                */}
+                <Link to={heroPrimaryCta.href}>
                   {heroPrimaryCta.label}
                   <PrimaryIcon className="h-5 w-5" />
-                </a>
+                </Link>
               </Button>
               <Button
                 asChild
@@ -52,17 +72,32 @@ const HomeHero = () => {
                 variant="outline"
                 className="min-h-12 rounded-xl border-white/25 bg-white/10 px-7 text-white hover:bg-white hover:text-slate-950"
               >
-                <a href={telegramCommunityUrl} target="_blank" rel="noopener noreferrer">
+                <a href={content.telegramUrl} target="_blank" rel="noopener noreferrer">
                   <MessageCircle className="h-5 w-5" />
                   Join Telegram
                 </a>
               </Button>
             </div>
 
+            {/*
+              Below the CTAs rather than above them, and that ordering is deliberate. The
+              countdown arrives with the settings query while the rest of the hero paints from
+              the compiled-in defaults, so anything placed above the buttons would push them
+              down under the visitor's cursor a moment after the page settled. Here, a late
+              arrival moves only the figures below it. It renders nothing at all when no session
+              is configured — see MentorshipCountdown.
+            */}
+            <MentorshipCountdown countdown={content.countdown} />
+
+            {/*
+              Keyed by index rather than by label: the labels are administrator-editable now,
+              so two of them can legitimately be identical for as long as it takes to finish
+              typing the second one.
+            */}
             <div className="mt-10 grid max-w-2xl grid-cols-3 gap-3 sm:gap-5">
-              {heroStats.map((stat) => (
+              {content.heroStats.map((stat, index) => (
                 <div
-                  key={stat.label}
+                  key={index}
                   className="rounded-2xl border border-white/10 bg-white/[0.07] p-4 backdrop-blur"
                 >
                   <div className="text-2xl font-bold text-white sm:text-3xl">{stat.value}</div>
@@ -104,8 +139,9 @@ const HomeHero = () => {
 
                 <div className="mt-6 rounded-2xl border border-success/20 bg-success/10 p-4">
                   <p className="text-sm leading-6 text-slate-200">
-                    Phase 1 focuses on a premium homepage foundation. Enrollment, payment, and
-                    receipt upload flows arrive in later approved phases.
+                    Enroll in minutes: choose a program, pay by bank transfer, then upload your
+                    receipt. Every enrollment is checked by hand, and your confirmation page
+                    tracks where it stands.
                   </p>
                 </div>
               </div>

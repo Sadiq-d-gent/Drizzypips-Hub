@@ -1,22 +1,29 @@
-import { AlertTriangle, CreditCard, Info, ToggleLeft } from "lucide-react";
+import { AlertTriangle, CreditCard, Globe, Info, ToggleLeft } from "lucide-react";
 
 import AdminSection from "@/components/admin/AdminSection";
 import AdminStateCard from "@/components/admin/AdminStateCard";
 import PaymentSettingsForm from "@/components/admin/PaymentSettingsForm";
 import SiteSettingsForm from "@/components/admin/SiteSettingsForm";
+import WebsiteSettingsForm from "@/components/admin/WebsiteSettingsForm";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useAdminSettings } from "@/hooks/useAdminSettings";
 import { usePaymentSettings } from "@/hooks/usePaymentSettings";
-import { useSavePaymentSettings, useSaveSiteSettings } from "@/hooks/useSettingsMutations";
+import {
+  useSavePaymentSettings,
+  useSaveSiteSettings,
+  useSaveWebsiteSettings,
+} from "@/hooks/useSettingsMutations";
+import { useWebsiteSettings } from "@/hooks/useWebsiteSettings";
 
 /**
- * The two settings tables, edited side by side.
+ * The three settings tables, edited on one screen.
  *
- * Two independent sections, each with its own query, its own form and its own save button.
+ * Three independent sections, each with its own query, its own form and its own save button.
  * That separation is the point of the screen: an account number left blank must not be able
- * to stop someone from pausing enrollments, and pausing must not require re-validating the
- * payment instructions. Nothing is shared between them but the page shell.
+ * to stop someone from pausing enrollments, pausing must not require re-validating the
+ * payment instructions, and neither must stand between an administrator and a corrected
+ * Telegram link. Nothing is shared between them but the page shell.
  */
 
 /** Placeholder heights roughly matching each form, so the page does not jump on load. */
@@ -31,20 +38,23 @@ const FormSkeleton = ({ rows }: { rows: readonly string[] }) => (
 const AdminSettings = () => {
   const paymentQuery = usePaymentSettings();
   const siteQuery = useAdminSettings();
+  const websiteQuery = useWebsiteSettings();
 
   const savePayment = useSavePaymentSettings();
   const saveSite = useSaveSiteSettings();
+  const saveWebsite = useSaveWebsiteSettings();
 
   const payment = paymentQuery.data ?? null;
   const site = siteQuery.data ?? null;
+  const website = websiteQuery.data ?? null;
 
   return (
     <div className="mx-auto w-full max-w-3xl">
       <div className="min-w-0">
         <h1 className="text-3xl font-bold tracking-tight text-foreground">Settings</h1>
         <p className="mt-2 text-sm text-muted-foreground">
-          Bank details students pay into, and the switch that closes enrollment. Both take
-          effect as soon as you save.
+          Bank details students pay into, the switch that closes enrollment, and the copy and
+          links on the public pages. All of it takes effect as soon as you save.
         </p>
       </div>
 
@@ -135,6 +145,47 @@ const AdminSettings = () => {
               settings={site}
               isSubmitting={saveSite.isPending}
               onSubmit={(values) => saveSite.mutate(values)}
+            />
+          )}
+        </AdminSection>
+
+        <AdminSection
+          divided
+          icon={Globe}
+          title="Website content"
+          description="Headline, hero figures, community and broker links, socials and footer — without a deploy."
+        >
+          {websiteQuery.isLoading ? (
+            <FormSkeleton rows={["h-20", "h-12", "h-24", "h-32", "h-40"]} />
+          ) : websiteQuery.isError ? (
+            /*
+              The one settings card where the error branch is protective rather than
+              informational. The public pages fail open — they render the compiled-in copy when
+              this query fails — but an admin form that rendered on a failed read would show
+              every field empty, and saving that would write NULL over whatever is actually
+              stored. So nothing is offered to edit until the current values are known.
+            */
+            <AdminStateCard
+              icon={AlertTriangle}
+              title="Couldn't load the website content"
+              description="Something went wrong reading the settings. The public pages are unaffected — they are still showing the saved copy. Please try again before editing."
+              tone="destructive"
+            >
+              <Button
+                className="btn-premium min-h-11"
+                onClick={() => {
+                  void websiteQuery.refetch();
+                }}
+              >
+                Try again
+              </Button>
+            </AdminStateCard>
+          ) : (
+            <WebsiteSettingsForm
+              key={website?.updated_at ?? "empty"}
+              settings={website}
+              isSubmitting={saveWebsite.isPending}
+              onSubmit={(values) => saveWebsite.mutate(values)}
             />
           )}
         </AdminSection>

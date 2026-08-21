@@ -1,33 +1,82 @@
 import {
   ArrowRight,
   BarChart3,
-  BookOpen,
-  Crown,
   GraduationCap,
   MessageCircle,
   ShieldCheck,
   Sparkles,
   Target,
   TrendingUp,
-  Users,
   WalletCards,
 } from "lucide-react";
 
+import { MENTORSHIP_PATH } from "@/lib/courses/routes";
+import type { WebsiteContent } from "@/types/website";
+
 export const supportWhatsAppNumber = "+2349035853860";
-export const telegramCommunityUrl = "https://t.me/Drizzypipz";
-export const brokerAffiliateUrl = "https://one.exnessonelink.com/a/8a8m0r1s9v";
+
+/**
+ * Compiled-in defaults for every column of `public.website_settings`.
+ *
+ * These are the values the site shipped with, and they remain the single source of truth
+ * for each string. 011_create_website_settings.sql seeds one row with every content column
+ * NULL, and null means "use the default from here" — so a fresh database, a partially
+ * filled row, a dropped table and a failed query all render exactly this copy rather than
+ * blank space. The admin form shows each of these as its field's placeholder, so an
+ * administrator can see what they are overriding.
+ *
+ * `signalGroupUrl` is deliberately absent: there is no independent default for it. When the
+ * column is unset the signals page uses the resolved Telegram URL, which is what it did
+ * before the column existed — see resolveWebsiteSettings.
+ *
+ * `countdown` is absent for a stronger reason, which is why this object is not simply
+ * `satisfies WebsiteContent` minus one key. Two of its three columns have no default at all:
+ * an unset `countdown_session_at` means the hero renders no countdown, because there is no
+ * honest default for "when is the next session", and `countdown_enabled` is a switch rather
+ * than a value. Only the title has a default, and it is `countdownTitle` below.
+ */
+export const WEBSITE_DEFAULTS = {
+  heroTitle: "Trade with structure, confidence, and a mentor-led path.",
+  heroSubtitle:
+    "Structured forex mentorship with a clear path from market foundations to live execution. Browse a program, enroll online, and pay by bank transfer — every enrollment is reviewed by hand.",
+  heroStats: [
+    { value: "5+", label: "Years trading" },
+    { value: "1,000+", label: "Students trained" },
+    { value: "50+", label: "Funded traders" },
+  ],
+  /**
+   * Heading above the countdown, used when `countdown_title` is unset.
+   *
+   * Unlike every other default here this one is never rendered on its own: it only appears
+   * once an administrator has switched the countdown on and set a session moment, so it is
+   * the caption for a date rather than copy the site ships with.
+   */
+  countdownTitle: "Next live mentorship session",
+  telegramUrl: "https://t.me/Drizzypipz",
+  brokerName: "Exness",
+  brokerDescription:
+    "A globally used broker recommended for students who need straightforward account setup, fast execution, and reliable withdrawals.",
+  brokerUrl: "https://one.exnessonelink.com/a/8a8m0r1s9v",
+  instagramUrl: "https://instagram.com/drizzypipsacademy",
+  tiktokUrl: "https://tiktok.com/@drizzypips",
+  contactEmail: "contact@drizzypips.com",
+  footerTagline:
+    "A premium mentorship platform for learning trading with structure, practical guidance, and direct support at every step.",
+  /**
+   * The year is computed rather than written, because the footer's hardcoded "© 2026" would
+   * have been wrong from the first of January. An administrator who sets this column takes
+   * the year over with it.
+   */
+  footerCopyright: `© ${new Date().getFullYear()} Drizzypips. All rights reserved.`,
+} as const satisfies Omit<WebsiteContent, "signalGroupUrl" | "countdown"> & {
+  countdownTitle: string;
+};
 
 export const homepageNavItems = [
   { name: "Mentorship", href: "/mentorship", external: false },
   { name: "Signals", href: "/signals", external: false },
   { name: "Telegram Channel", href: "/telegram", external: false },
   { name: "Broker", href: "/broker", external: false },
-] as const;
-
-export const heroStats = [
-  { value: "5+", label: "Years trading" },
-  { value: "1,000+", label: "Students trained" },
-  { value: "50+", label: "Funded traders" },
 ] as const;
 
 export const featureCards = [
@@ -53,34 +102,7 @@ export const featureCards = [
     icon: MessageCircle,
     title: "Direct support",
     description:
-      "Students can reach support quickly while the platform evolves toward a full self-service flow.",
-  },
-] as const;
-
-export const mentorshipPrograms = [
-  {
-    icon: BookOpen,
-    name: "General Online Class",
-    price: "$100",
-    description: "A focused online program for beginners building strong market fundamentals.",
-    highlights: ["Beginner to advanced knowledge", "Risk management basics", "Strategy selection"],
-    badge: "Starter",
-  },
-  {
-    icon: Users,
-    name: "Live Physical Class",
-    price: "$150",
-    description: "Hands-on class experience with live feedback and practical chart sessions.",
-    highlights: ["Technical breakdowns", "Live trading practice", "Direct mentor feedback"],
-    badge: "Popular",
-  },
-  {
-    icon: Crown,
-    name: "Special Physical Class",
-    price: "$520",
-    description: "Premium one-on-one mentorship with immersive practical learning.",
-    highlights: ["Personal strategy work", "Live mentor trading", "Accommodation inclusive"],
-    badge: "Premium",
+      "Reach a person on WhatsApp or Telegram at any point — choosing a program, paying, or after your receipt is in.",
   },
 ] as const;
 
@@ -112,14 +134,14 @@ export const faqs = [
       "No. The mentorship is designed to support beginners while still giving growing traders a structured path.",
   },
   {
-    question: "Is the new enrollment flow available yet?",
+    question: "How do I enroll and pay?",
     answer:
-      "Not in this phase. This homepage prepares the product experience while enrollment, payment, and receipt upload come in later phases.",
+      "Choose a program, fill in the enrollment form, transfer the fee to the bank details shown on the payment step, then upload your receipt. Every enrollment is reviewed by hand, and the confirmation link you get shows where yours stands.",
   },
   {
     question: "Can I still contact Drizzypips directly?",
     answer:
-      "Yes. WhatsApp and Telegram contact paths are preserved so visitors can still ask questions immediately.",
+      "Yes. WhatsApp and Telegram links sit in the footer of every page, so you can ask before choosing a program or after your receipt is in.",
   },
 ] as const;
 
@@ -138,6 +160,12 @@ export const consultationWhatsAppMessage =
 
 export const heroPrimaryCta = {
   label: "Explore Mentorship",
-  href: "#mentorship",
+  /**
+   * The catalogue route, taken from courses/routes.ts rather than written again here — that
+   * module exists so the path has one definition. It used to be `#mentorship`, an in-page
+   * anchor to a section of hardcoded programs that led nowhere; the section below it now lists
+   * real courses, and this button goes to the full list.
+   */
+  href: MENTORSHIP_PATH,
   icon: ArrowRight,
 } as const;

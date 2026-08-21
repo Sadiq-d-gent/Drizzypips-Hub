@@ -1,9 +1,9 @@
 /**
  * Course route paths.
  *
- * Centralised so the catalogue, the detail page and the enrollment placeholder cannot
- * drift apart. Slugs come from the database and are interpolated into a URL, so they
- * are encoded here rather than at each call site.
+ * Centralised so the catalogue, the detail page, the enrollment wizard and the homepage's
+ * primary call to action cannot drift apart. Slugs come from the database and are interpolated
+ * into a URL, so they are encoded here rather than at each call site.
  */
 
 export const MENTORSHIP_PATH = "/mentorship";

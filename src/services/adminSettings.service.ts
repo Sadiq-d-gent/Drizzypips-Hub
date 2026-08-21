@@ -1,29 +1,39 @@
 import { SETTINGS_SQLSTATE } from "@/lib/constants/admin";
 import { getSupabaseClient } from "@/lib/supabase/client";
-import type { PaymentSettingsInput, SiteSettingsInput } from "@/lib/validation/settings.schema";
+import type {
+  PaymentSettingsInput,
+  SiteSettingsInput,
+  WebsiteSettingsInput,
+} from "@/lib/validation/settings.schema";
+import { combineSessionDateTime } from "@/lib/website/countdown";
+import { WEBSITE_SETTINGS_COLUMNS } from "@/services/websiteSettings.service";
 import type { AdminSettings } from "@/types/admin";
 import type { PaymentSettings } from "@/types/enrollment";
+import type { WebsiteSettingsRow } from "@/types/website";
 
 /**
- * Administrator reads and writes for the two settings tables.
+ * Administrator reads and writes for the three settings tables.
  *
  * WHY DIRECT TABLE ACCESS AND NOT AN RPC
  * Same reasoning as adminCourse.service.ts. 003_create_payment_settings.sql already
  * expresses the whole invariant in policies — SELECT/INSERT/UPDATE/DELETE gated on
  * `public.is_admin()` for both tables, plus `revoke all on public.admin_settings from anon`
  * — so a SECURITY DEFINER function would only restate it, in a second place that could
- * drift. The RLS policies are the authorization boundary; nothing on this side of the wire
- * is trusted, and a caller who is not an administrator gets 42501 rather than a write.
+ * drift. 011_create_website_settings.sql follows the same pattern for the third table. The
+ * RLS policies are the authorization boundary; nothing on this side of the wire is trusted,
+ * and a caller who is not an administrator gets 42501 rather than a write.
  *
  * The one thing that does need a function is the *anonymous* read of the pause state,
  * because `admin_settings` also holds `notification_email` and must stay closed to anon.
  * That lives in enrollmentAvailability.service.ts, deliberately in its own module so the
- * student bundle never imports anything from here.
+ * student bundle never imports anything from here. `website_settings` needs no such function:
+ * every column is public content, so its read is a plain policy in
+ * websiteSettings.service.ts — also its own module, for the same bundling reason.
  *
- * NO PAYLOAD EVER CARRIES `updated_at`. Both tables have a `set_updated_at()` BEFORE UPDATE
- * trigger (003:57-62 and 003:88-93), so the column belongs to the database. Sending it
- * would be a value the trigger immediately overwrites, and reading like a client that
- * believes otherwise.
+ * NO PAYLOAD EVER CARRIES `updated_at`. All three tables have a `set_updated_at()` BEFORE
+ * UPDATE trigger (003:57-62, 003:88-93 and 011), so the column belongs to the database.
+ * Sending it would be a value the trigger immediately overwrites, and reading like a client
+ * that believes otherwise.
  */
 
 /** Columns of payment_settings, matching PaymentSettings. Named rather than `*`. */
@@ -236,4 +246,88 @@ export const saveAdminSettings = async (
   }
 
   return data as AdminSettings;
+};
+
+/**
+ * Saves the single website_settings row, creating it if it does not exist.
+ *
+ * An upsert for the same reason saveAdminSettings uses one: 011 gives this table the same
+ * fixed `boolean` primary key, so `on conflict (id)` is exactly what it was built for.
+ *
+ * WHY THE READ FOR THIS TABLE IS NOT IN THIS FILE
+ * `fetchWebsiteSettings` lives in websiteSettings.service.ts, deliberately, so that a public
+ * page importing site copy does not import this module — which holds administrator writes for
+ * all three settings tables. Same split as enrollmentAvailability.service.ts, for the same
+ * bundling reason.
+ *
+ * EVERY BLANK BECOMES NULL, AND THAT IS THE FEATURE
+ * `emptyToNull` on the text fields is what makes the form's "leave blank to use the site
+ * default" promise true. Storing `""` would satisfy the column but defeat
+ * resolveWebsiteSettings, which tests for a missing value to decide whether to fall back —
+ * and the admin would have published a blank headline rather than restored the default one.
+ *
+ * THE COUNTDOWN'S TWO FORM FIELDS BECOME ONE COLUMN HERE
+ * The administrator edits a date and a time; `website_settings.countdown_session_at` is a
+ * single `timestamptz`, so that every visitor counts down to the same instant regardless of
+ * timezone (012 sets out why two columns would not). This is the right place for that join
+ * for the same reason `emptyToNull` is here: it is a difference between the form's shape and
+ * the row's shape, and it belongs at the one boundary between them rather than in the form or
+ * in the component.
+ *
+ * `combineSessionDateTime` returns null for a blank or impossible pair, which makes the "clear
+ * both fields to remove the countdown" path a plain consequence rather than a special case.
+ * The schema has already refused the one combination the table would reject — the switch on
+ * with nothing to count to — so a null here always arrives with `countdown_enabled` false.
+ *
+ * No `updated_at` in the payload: 011 installs the shared `set_updated_at()` BEFORE UPDATE
+ * trigger, so the column belongs to the database.
+ */
+export const saveWebsiteSettings = async (
+  input: WebsiteSettingsInput,
+): Promise<WebsiteSettingsRow> => {
+  const supabase = getSupabaseClient();
+
+  const { data, error } = await supabase
+    .from("website_settings")
+    .upsert(
+      {
+        id: true,
+        hero_title: emptyToNull(input.hero_title),
+        hero_subtitle: emptyToNull(input.hero_subtitle),
+        hero_stat_1_value: emptyToNull(input.hero_stat_1_value),
+        hero_stat_1_label: emptyToNull(input.hero_stat_1_label),
+        hero_stat_2_value: emptyToNull(input.hero_stat_2_value),
+        hero_stat_2_label: emptyToNull(input.hero_stat_2_label),
+        hero_stat_3_value: emptyToNull(input.hero_stat_3_value),
+        hero_stat_3_label: emptyToNull(input.hero_stat_3_label),
+        countdown_enabled: input.countdown_enabled,
+        countdown_title: emptyToNull(input.countdown_title),
+        countdown_session_at: combineSessionDateTime(
+          input.countdown_session_date,
+          input.countdown_session_time,
+        ),
+        telegram_url: emptyToNull(input.telegram_url),
+        signal_group_url: emptyToNull(input.signal_group_url),
+        broker_name: emptyToNull(input.broker_name),
+        broker_description: emptyToNull(input.broker_description),
+        broker_url: emptyToNull(input.broker_url),
+        instagram_url: emptyToNull(input.instagram_url),
+        tiktok_url: emptyToNull(input.tiktok_url),
+        contact_email: emptyToNull(input.contact_email),
+        footer_tagline: emptyToNull(input.footer_tagline),
+        footer_copyright: emptyToNull(input.footer_copyright),
+      },
+      { onConflict: "id" },
+    )
+    .select(WEBSITE_SETTINGS_COLUMNS)
+    .single();
+
+  if (error) {
+    throw toSettingsError(
+      error,
+      "Something went wrong saving the website content. Please try again.",
+    );
+  }
+
+  return data as WebsiteSettingsRow;
 };

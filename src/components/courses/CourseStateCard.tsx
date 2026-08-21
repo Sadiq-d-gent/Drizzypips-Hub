@@ -13,8 +13,8 @@ type CourseStateCardProps = {
 };
 
 /**
- * Centred message card for the non-populated course states (not found, error,
- * enrollment placeholder). Renders an h1 because each state is the page's main
+ * Centred message card for the non-populated course states (not found, load error,
+ * enrollment closed). Renders an h1 because each state is the page's main
  * subject when it is shown.
  */
 const CourseStateCard = ({

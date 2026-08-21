@@ -43,15 +43,21 @@ On machines with little free RAM, `npm run build` can abort during the transform
 FATAL ERROR: Zone Allocation failed - process out of memory
 ```
 
-This is the OS refusing memory, not a JS heap ceiling. Cap V8's heap so it stays
-within what is actually available:
+This is the OS refusing memory, not a JS heap ceiling. Two things are needed, and on a
+~4 GB machine neither works without the other:
 
 ```bash
-NODE_OPTIONS="--max-old-space-size=1024" npm run build
+NODE_OPTIONS="--max-old-space-size=3072" npm run build
 ```
 
-Closing memory-heavy background apps helps as well. The cap is deliberately kept
-out of `package.json` so CI and normal machines use Node's defaults.
+**Stop the Vite dev server first.** It holds enough RAM on its own to make the build
+fail, and the failure looks identical to a heap-size problem. A verified run on a
+3.86 GB machine with the dev server stopped took **15m 22s** and produced a 968 kB
+JS bundle — slow, but it completes. A smaller cap such as `1024` does not help here:
+the transform step needs more than that, so it aborts sooner rather than later.
+
+The cap is deliberately kept out of `package.json` so CI and normal machines use
+Node's defaults.
 
 ## Database types
 
