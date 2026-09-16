@@ -28,6 +28,9 @@ type EnrollmentDetailsFormProps = {
 /**
  * Step 1: who is enrolling.
  *
+ * Submitting moves to the verify step rather than straight to payment, so the address is
+ * proven before the student is shown where to send money.
+ *
  * Validation runs on blur rather than on every keystroke, so a half-typed email is not
  * flagged as invalid while it is still being typed. react-hook-form wires each message
  * to its input with aria-describedby/aria-invalid through the shadcn Form primitives.
@@ -134,7 +137,7 @@ const EnrollmentDetailsForm = ({ defaultValues, onSubmit }: EnrollmentDetailsFor
         />
 
         <Button type="submit" className="btn-premium min-h-12 w-full sm:w-auto">
-          Continue to payment
+          Continue to verification
           <ArrowRight className="h-4 w-4" aria-hidden="true" />
         </Button>
       </form>

@@ -3,6 +3,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom";
 
 import CourseStateCard from "@/components/courses/CourseStateCard";
+import EmailVerificationPanel from "@/components/enrollment/EmailVerificationPanel";
 import EnrollmentDetailsForm from "@/components/enrollment/EnrollmentDetailsForm";
 import EnrollmentPausedPanel from "@/components/enrollment/EnrollmentPausedPanel";
 import EnrollmentStepper from "@/components/enrollment/EnrollmentStepper";
@@ -24,7 +25,7 @@ import {
   enrollmentConfirmationPath,
   MENTORSHIP_PATH,
 } from "@/lib/courses/routes";
-import { EnrollmentStep, isEnrollmentStep } from "@/lib/enrollment/steps";
+import { EnrollmentStep, VERIFICATION_STEP, isEnrollmentStep } from "@/lib/enrollment/steps";
 import { isEnrollmentPausedFrom } from "@/services/enrollmentAvailability.service";
 import { EnrollmentError } from "@/services/enrollment.service";
 import { EnrollmentDetailsInput } from "@/lib/validation/enrollment.schema";
@@ -69,12 +70,17 @@ const readDraft = (slug: string): EnrollmentDetailsInput => {
 };
 
 /**
- * Three-step enrollment wizard: details → payment → receipt.
+ * Four-step enrollment wizard: details → verify → payment → receipt.
  *
  * The step lives in a query parameter so the browser's back button moves between steps
  * instead of leaving the flow, and so a reload keeps the student where they were. The
  * details themselves are held in sessionStorage against the course slug, which is what
  * makes that reload survivable.
+ *
+ * The verify step is where the student proves they control the address they entered. It is
+ * deliberately placed before payment rather than at the end: an unverified address is
+ * refused by the database either way (create_enrollment raises EV002), and being refused
+ * after transferring money is a far worse experience than being asked for a code before.
  *
  * The course is re-read through the same published-only query the detail page uses, so
  * an unpublished slug cannot be reached by typing the URL. That is a UI guard only —
@@ -111,6 +117,28 @@ const CourseEnrollment = () => {
   const [details, setDetails] = useState<EnrollmentDetailsInput>(EMPTY_DETAILS);
   const [submitError, setSubmitError] = useState<string | null>(null);
 
+  /**
+   * The address that has been verified in this session, and until when.
+   *
+   * Held as a pair rather than a bare flag, and checked against the email currently in the
+   * form before it is passed down. Editing the address therefore invalidates it without any
+   * extra bookkeeping: a verification for a@example.com proves nothing about b@example.com.
+   *
+   * This is presentation only. It decides whether the wizard shows a "continue" button or
+   * the code field; it does not decide whether an enrollment is accepted. That is
+   * create_enrollment()'s call, and it asks the database.
+   */
+  const [verification, setVerification] = useState<{
+    email: string;
+    verifiedUntil: string;
+  } | null>(null);
+
+  /**
+   * A message to show on the verify step, set when the flow arrives there for a reason
+   * other than the student pressing on: an EV002 refusal, or a window that lapsed.
+   */
+  const [verificationNotice, setVerificationNotice] = useState<string | null>(null);
+
   const stepParam = searchParams.get(STEP_PARAM);
   const currentStep: EnrollmentStep = isEnrollmentStep(stepParam) ? stepParam : "details";
 
@@ -135,6 +163,7 @@ const CourseEnrollment = () => {
   const handleDetailsSubmit = useCallback(
     (values: EnrollmentDetailsInput) => {
       setDetails(values);
+      setVerificationNotice(null);
 
       if (slug) {
         try {
@@ -145,10 +174,37 @@ const CourseEnrollment = () => {
         }
       }
 
-      goToStep("payment");
+      /**
+       * Skips the verify step when this exact address already cleared it in this session
+       * and the window has not lapsed. The student still sees the step marked complete in
+       * the stepper; they just are not asked for a second code they already have, which
+       * matters because requesting another would meet the 60-second cooldown.
+       *
+       * The comparison is against the address being submitted, not the one previously
+       * verified, so correcting a typo always sends the student back through the code.
+       */
+      const isAlreadyVerified =
+        verification !== null &&
+        verification.email === values.studentEmail.trim().toLowerCase() &&
+        new Date(verification.verifiedUntil).getTime() > Date.now();
+
+      goToStep(isAlreadyVerified ? "payment" : VERIFICATION_STEP);
     },
-    [goToStep, slug],
+    [goToStep, slug, verification],
   );
+
+  const handleVerified = useCallback((verifiedUntil: string) => {
+    // Stored against the address that was verified, lowercased to match how
+    // request_email_verification() normalises it before hashing (015:218). Storage only —
+    // the server re-checks the address it is actually given.
+    setVerification({ email: details.studentEmail.trim().toLowerCase(), verifiedUntil });
+    setVerificationNotice(null);
+  }, [details.studentEmail]);
+
+  const handleVerificationContinue = useCallback(() => {
+    setVerificationNotice(null);
+    goToStep("payment");
+  }, [goToStep]);
 
   const submission = useEnrollmentSubmission((result) => {
     // The draft has served its purpose, and it holds PII — clear it as soon as the
@@ -194,11 +250,32 @@ const CourseEnrollment = () => {
            */
           if (error instanceof EnrollmentError && error.isEnrollmentPaused) {
             setSubmitError(
-              "Enrollment closed while you were completing this form, so we could not record your submission. Please contact support before making any further payment — keep your receipt.",
+              "Enrollment closed while you were completing this form, so we could not record your submission. Please contact support before making any further payment, and keep your receipt.",
             );
             // Brings the cache in line with reality for the rest of the session. The panel
             // does not take over the page while this error is on screen; see renderContent.
             void availability.refetch();
+            return;
+          }
+
+          /**
+           * The address is no longer verified. In the ordinary case this means the two-hour
+           * window lapsed while the student was choosing a receipt, or the page was left
+           * open overnight; the client-side check that skipped the verify step was true
+           * when it ran and is simply out of date now.
+           *
+           * The client-side flag is cleared so the verify step asks for a code rather than
+           * showing a stale "continue" card, and the student is sent back there with an
+           * explanation. Nothing they have entered is lost: `details` is untouched and the
+           * uploaded receipt is still held by the upload hook.
+           */
+          if (error instanceof EnrollmentError && error.isEmailUnverified) {
+            setVerification(null);
+            setSubmitError(null);
+            setVerificationNotice(
+              "Your email verification has expired. Verify this address again, then submit your enrollment. Nothing you entered has been lost.",
+            );
+            goToStep(VERIFICATION_STEP);
             return;
           }
 
@@ -217,15 +294,17 @@ const CourseEnrollment = () => {
           }
 
           setSubmitError(
-            "Something went wrong while submitting your enrollment. Your payment has not been lost — please try again, or contact support with your receipt.",
+            "Something went wrong while submitting your enrollment. Your payment has not been lost. Please try again, or contact support with your receipt.",
           );
         },
       },
     );
-  }, [course, details, submission, upload.uploaded, availability]);
+  }, [course, details, submission, upload.uploaded, availability, goToStep]);
 
   const stepHeading = useMemo(() => {
     switch (currentStep) {
+      case "verify":
+        return "Verify your email";
       case "payment":
         return "Make your payment";
       case "receipt":
@@ -238,6 +317,29 @@ const CourseEnrollment = () => {
   const renderStep = () => {
     if (!course) {
       return null;
+    }
+
+    if (currentStep === "verify") {
+      /**
+       * Only a verification matching the address currently in the form counts. Anything
+       * else — a different address, or one verified and since edited — is passed as null
+       * so the panel asks for a code.
+       */
+      const verifiedUntil =
+        verification && verification.email === details.studentEmail.trim().toLowerCase()
+          ? verification.verifiedUntil
+          : null;
+
+      return (
+        <EmailVerificationPanel
+          email={details.studentEmail.trim()}
+          verifiedUntil={verifiedUntil}
+          notice={verificationNotice}
+          onVerified={handleVerified}
+          onContinue={handleVerificationContinue}
+          onBack={() => goToStep("details")}
+        />
+      );
     }
 
     if (currentStep === "payment") {
@@ -380,8 +482,8 @@ const CourseEnrollment = () => {
           Enroll in {course.title}
         </h1>
         <p className="mt-3 max-w-2xl leading-7 text-muted-foreground">
-          Three steps: confirm your details, transfer the fee, then upload your receipt. We'll
-          confirm your place once the payment is checked.
+          Four steps: confirm your details, verify your email, transfer the fee, then upload
+          your receipt. We'll confirm your place once the payment is checked.
         </p>
 
         <div className="mt-10">

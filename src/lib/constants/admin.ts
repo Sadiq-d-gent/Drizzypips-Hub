@@ -99,10 +99,10 @@ export const REVIEW_SQLSTATE = {
  * a text column, so adding a code here is the only change a new currency needs.
  */
 export const COURSE_CURRENCY_OPTIONS = [
-  { value: "NGN", label: "NGN — Nigerian Naira" },
-  { value: "USD", label: "USD — US Dollar" },
-  { value: "GBP", label: "GBP — British Pound" },
-  { value: "EUR", label: "EUR — Euro" },
+  { value: "NGN", label: "NGN (Nigerian Naira)" },
+  { value: "USD", label: "USD (US Dollar)" },
+  { value: "GBP", label: "GBP (British Pound)" },
+  { value: "EUR", label: "EUR (Euro)" },
 ] as const;
 
 /**

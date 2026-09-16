@@ -68,7 +68,7 @@ const ReceiptPanel = ({ enrollment }: ReceiptPanelProps) => {
         {!hasReceipt ? (
           <p className="mt-4 text-sm text-muted-foreground">
             No receipt was uploaded with this enrollment. The student may have been asked to
-            send it another way — check the student note and the status history below.
+            send it another way, so check the student note and the status history below.
           </p>
         ) : (
           <>
@@ -140,7 +140,7 @@ const ReceiptPanel = ({ enrollment }: ReceiptPanelProps) => {
 
             <p className="mt-3 text-xs text-muted-foreground">
               Opens a private link that expires after {RECEIPT_SIGNED_URL_TTL_SECONDS} seconds.
-              Don't share it — anyone with the link can read the file until it expires.
+              Don't share it, anyone with the link can read the file until it expires.
             </p>
           </>
         )}

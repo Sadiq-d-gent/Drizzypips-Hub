@@ -59,7 +59,7 @@ const MentorshipPreviewSection = () => {
               We couldn&apos;t load the programs
             </h3>
             <p className="mt-3 max-w-xl leading-7 text-muted-foreground">
-              The rest of this page is fine — only the course list failed to load. Try again, or
+              The rest of this page is fine, only the course list failed to load. Try again, or
               open the full catalogue.
             </p>
             <div className="mt-8 flex flex-wrap justify-center gap-3">

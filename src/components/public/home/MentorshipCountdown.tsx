@@ -1,6 +1,7 @@
 import { CalendarClock } from "lucide-react";
 import { useEffect, useState } from "react";
 
+import RemindMeDialog from "@/components/public/home/RemindMeDialog";
 import { countdownBreakdown, formatSessionMoment } from "@/lib/website/countdown";
 import type { CountdownBreakdown } from "@/lib/website/countdown";
 import type { WebsiteCountdown } from "@/types/website";
@@ -160,6 +161,20 @@ const CountdownCard = ({ countdown }: { countdown: WebsiteCountdown }) => {
           <span className="sr-only">{describeRemaining(breakdown)}</span>
         </>
       )}
+
+      {/*
+        Offered only before the session, and only when the administrator has switched reminders
+        on. The `reached` half of that is this file's own judgement rather than the server's:
+        017 refuses a signup for a session that has already started, so showing the button then
+        would be offering something that cannot work. The flag is presentation only — a tab left
+        open while the switch is turned off still has its signup refused server-side.
+      */}
+      {countdown.remindersEnabled && !breakdown.reached ? (
+        <RemindMeDialog
+          sessionAt={countdown.targetAt}
+          leadHours={countdown.reminderLeadHours}
+        />
+      ) : null}
     </div>
   );
 };

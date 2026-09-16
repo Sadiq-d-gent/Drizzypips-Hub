@@ -70,7 +70,7 @@ const AdminSettings = () => {
             <AdminStateCard
               icon={AlertTriangle}
               title="Couldn't load the payment details"
-              description="Something went wrong reading the settings. Nothing has changed — please try again."
+              description="Something went wrong reading the settings. Nothing has changed, please try again."
               tone="destructive"
             >
               <Button
@@ -127,7 +127,7 @@ const AdminSettings = () => {
             <AdminStateCard
               icon={AlertTriangle}
               title="Couldn't load the enrollment settings"
-              description="Something went wrong reading the settings. Enrollment is unaffected — please try again."
+              description="Something went wrong reading the settings. Enrollment is unaffected, please try again."
               tone="destructive"
             >
               <Button
@@ -153,7 +153,7 @@ const AdminSettings = () => {
           divided
           icon={Globe}
           title="Website content"
-          description="Headline, hero figures, community and broker links, socials and footer — without a deploy."
+          description="Headline, hero figures, community and broker links, socials and footer, without a deploy."
         >
           {websiteQuery.isLoading ? (
             <FormSkeleton rows={["h-20", "h-12", "h-24", "h-32", "h-40"]} />
@@ -168,7 +168,7 @@ const AdminSettings = () => {
             <AdminStateCard
               icon={AlertTriangle}
               title="Couldn't load the website content"
-              description="Something went wrong reading the settings. The public pages are unaffected — they are still showing the saved copy. Please try again before editing."
+              description="Something went wrong reading the settings. The public pages are unaffected, they are still showing the saved copy. Please try again before editing."
               tone="destructive"
             >
               <Button

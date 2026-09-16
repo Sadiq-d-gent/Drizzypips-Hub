@@ -125,17 +125,23 @@ const ADMIN_SERVICE_TS = path.join(projectRoot, "src", "services", "adminSetting
 const SETTINGS_SCHEMA_TS = path.join(projectRoot, "src", "lib", "validation", "settings.schema.ts");
 
 /**
- * The twenty-one content columns, in the order 011 and 012 declare them.
+ * The twenty-three content columns, in the order 011, 012 and 013 declare them.
  *
  * `id` and `created_at` are deliberately absent: the first is a constant `true` and the
  * second is never displayed, which is why WEBSITE_SETTINGS_COLUMNS omits both. `updated_at`
  * is tracked separately below because it is read but never written.
  *
  * The three `countdown_*` columns were added by 012 and belong on this list for the reason
- * every other column does — they are printed in the homepage hero. That they are here is what
+ * every other column does, they are printed in the homepage hero. That they are here is what
  * makes A3 a real assertion: a column added to a world-readable table without anyone noticing
  * is the thing that probe exists to catch, and it can only notice by comparing against a list
  * someone had to edit deliberately.
+ *
+ * `mentorship_heading` and `mentorship_intro` are that mechanism working as designed. 013 added
+ * them, A3 and D1 failed on the next run naming both, and this list was edited by hand after
+ * reading 013 to confirm they are public copy printed at the top of /mentorship. The assertion
+ * is not weakened by the edit: anything the next migration adds without this list being updated
+ * still fails, which is the only reason to keep the list at all.
  */
 const CONTENT_COLUMNS = [
   "hero_title",
@@ -149,6 +155,8 @@ const CONTENT_COLUMNS = [
   "countdown_enabled",
   "countdown_title",
   "countdown_session_at",
+  "mentorship_heading",
+  "mentorship_intro",
   "telegram_url",
   "signal_group_url",
   "broker_name",
@@ -887,7 +895,7 @@ const main = async () => {
     const extra = listed.filter((column) => !READ_COLUMNS.includes(column));
 
     record(
-      "D1. WEBSITE_SETTINGS_COLUMNS names exactly the columns 011 and 012 declare, less id and created_at",
+      "D1. WEBSITE_SETTINGS_COLUMNS names exactly the columns 011, 012 and 013 declare, less id and created_at",
       listed.length === READ_COLUMNS.length && missing.length === 0 && extra.length === 0,
       `${listed.length} names` +
         (missing.length === 0 && extra.length === 0

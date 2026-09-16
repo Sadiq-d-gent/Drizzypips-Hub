@@ -40,6 +40,8 @@ const COURSE_SELECT = `
   price,
   currency,
   thumbnail_url,
+  mentorship_delivery,
+  mentorship_format,
   published,
   created_at,
   updated_at

@@ -1,4 +1,4 @@
-import { MessageCircle, PlayCircle, ShieldCheck } from "lucide-react";
+import { BellRing, PlayCircle, ShieldCheck, TrendingUp } from "lucide-react";
 import { Link } from "react-router-dom";
 
 import MentorshipCountdown from "@/components/public/home/MentorshipCountdown";
@@ -11,13 +11,13 @@ const HomeHero = () => {
   const PrimaryIcon = heroPrimaryCta.icon;
 
   /**
-   * Headline, paragraph, the three figures, the Telegram link and the session countdown come
-   * from `website_settings` when set, and from the compiled-in defaults otherwise. There is no
-   * loading branch on purpose: the resolver returns the shipped copy while the query is in
+   * Headline, paragraph, the three figures, the three CTA destinations and the session countdown
+   * come from `website_settings` when set, and from the compiled-in defaults otherwise. There is
+   * no loading branch on purpose: the resolver returns the shipped copy while the query is in
    * flight, so the hero paints once with real words rather than flashing empty. See
    * useWebsiteContent.
    *
-   * The countdown is the one part with no default — `content.countdown` is null until an
+   * The countdown is the one part with no default. `content.countdown` is null until an
    * administrator schedules a session, and null renders nothing.
    */
   const content = useWebsiteContent();
@@ -53,28 +53,69 @@ const HomeHero = () => {
               {content.heroSubtitle}
             </p>
 
-            <div className="mt-9 flex flex-col gap-4 sm:flex-row">
+            {/*
+              THREE CTAs, AND THE BROKER IS THE LOUD ONE
+              The client asked for attention to be drawn to the broker, so it gets a treatment no
+              other button on the page has: a flat success fill with a ring and a halo, against a
+              row where the other two are a gradient and an outline. The flag beside the label is
+              doing the other half of that work, because a colour difference alone reads as "a
+              second button" rather than as a recommendation.
+
+              Explore Mentorship stays first. Visual weight and reading order are different
+              things, and the mentorship catalogue is still what most of this page is about.
+
+              `flex-wrap` rather than a three-column grid: three buttons at these widths will not
+              fit on one line on a small tablet, and wrapping is the behaviour that cannot
+              overflow horizontally at any viewport. At 375px they stack full-width.
+            */}
+            <div className="mt-9 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:gap-4">
               <Button asChild size="lg" className="btn-premium min-h-12 rounded-xl px-7">
                 {/*
                   A router Link to the catalogue, not an anchor to a section further down this
                   page. The section below now lists real published courses, and the visitor who
                   clicks "Explore Mentorship" wants the full list and the enrollment flow behind
-                  it — an in-page jump left them on a page with nowhere to go.
+                  it, whereas an in-page jump left them on a page with nowhere to go.
                 */}
                 <Link to={heroPrimaryCta.href}>
                   {heroPrimaryCta.label}
                   <PrimaryIcon className="h-5 w-5" />
                 </Link>
               </Button>
+
+              <Button
+                asChild
+                size="lg"
+                className="min-h-12 rounded-xl bg-success px-7 font-semibold text-success-foreground shadow-success ring-2 ring-success/45 ring-offset-2 ring-offset-trading-darker transition-all duration-300 hover:scale-[1.02] hover:bg-success hover:shadow-glow active:scale-95"
+              >
+                {/*
+                  `content.brokerName` rather than the word "Broker", so the button names the
+                  broker the client actually recommends and follows the settings row when that
+                  changes. The URL is the same editable column the /broker page uses.
+                */}
+                <a href={content.brokerUrl} target="_blank" rel="noopener noreferrer">
+                  <TrendingUp className="h-5 w-5" />
+                  Open {content.brokerName} account
+                  <span className="rounded-full bg-white/25 px-2 py-0.5 text-xs font-semibold uppercase tracking-wide">
+                    Recommended
+                  </span>
+                </a>
+              </Button>
+
               <Button
                 asChild
                 size="lg"
                 variant="outline"
                 className="min-h-12 rounded-xl border-white/25 bg-white/10 px-7 text-white hover:bg-white hover:text-slate-950"
               >
-                <a href={content.telegramUrl} target="_blank" rel="noopener noreferrer">
-                  <MessageCircle className="h-5 w-5" />
-                  Join Telegram
+                {/*
+                  `signalGroupUrl`, which resolveWebsiteSettings falls back to `telegramUrl` for
+                  while no distinct group link is set. That fallback is why this CTA needed no new
+                  column and no hardcoded URL: before the column existed this destination *was*
+                  the Telegram community, and it stays that until an administrator sets the group.
+                */}
+                <a href={content.signalGroupUrl} target="_blank" rel="noopener noreferrer">
+                  <BellRing className="h-5 w-5" />
+                  VIP Signal Group
                 </a>
               </Button>
             </div>
@@ -85,7 +126,7 @@ const HomeHero = () => {
               the compiled-in defaults, so anything placed above the buttons would push them
               down under the visitor's cursor a moment after the page settled. Here, a late
               arrival moves only the figures below it. It renders nothing at all when no session
-              is configured — see MentorshipCountdown.
+              is configured, per MentorshipCountdown.
             */}
             <MentorshipCountdown countdown={content.countdown} />
 

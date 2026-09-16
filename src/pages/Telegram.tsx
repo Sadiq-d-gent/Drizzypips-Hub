@@ -41,7 +41,7 @@ const Telegram = () => {
                   <p className="mt-4 leading-7 text-muted-foreground">
                     Worth following whether or not you enroll. If you have a question about a
                     program or an enrollment you have already submitted, WhatsApp support is the
-                    faster route — the link is in the footer of every page.
+                    faster route, and the link is in the footer of every page.
                   </p>
                   <div className="mt-6 space-y-3">
                     <div className="flex items-center gap-3 text-muted-foreground">

@@ -35,7 +35,7 @@ const Signals = () => {
               <h2 className="mt-6 text-2xl font-bold text-foreground">Before you join</h2>
               <p className="mx-auto mt-4 max-w-2xl leading-7 text-muted-foreground">
                 Ideas posted in the group are education, not personal financial advice. Nobody
-                there knows your account size, your risk tolerance or your circumstances — so
+                there knows your account size, your risk tolerance or your circumstances, so
                 treat every idea as something to check against your own plan, and size your own
                 risk.
               </p>

@@ -105,7 +105,7 @@ const PaymentSettingsForm = ({
     : [
         ...COURSE_CURRENCY_OPTIONS,
         ...(settings?.currency
-          ? [{ value: settings.currency, label: `${settings.currency} — in use` }]
+          ? [{ value: settings.currency, label: `${settings.currency} (in use)` }]
           : []),
       ];
 
@@ -169,7 +169,7 @@ const PaymentSettingsForm = ({
                 </FormControl>
                 <FormDescription>
                   Not restricted to digits, so an IBAN or routing number fits. Check it
-                  carefully — this is where money goes.
+                  carefully, this is where money goes.
                 </FormDescription>
                 <FormMessage />
               </FormItem>
@@ -216,7 +216,7 @@ const PaymentSettingsForm = ({
                 <Textarea
                   {...field}
                   rows={3}
-                  placeholder="Sort code, IBAN, SWIFT, branch — whatever this account needs."
+                  placeholder="Sort code, IBAN, SWIFT, branch: whatever this account needs."
                   className="rounded-xl border-border bg-card"
                 />
               </FormControl>
@@ -271,7 +271,7 @@ const PaymentSettingsForm = ({
                   />
                 </FormControl>
                 <FormDescription>
-                  Copy only — "we review within N hours". Nothing enforces it, and no
+                  Copy only: "we review within N hours". Nothing enforces it, and no
                   reminder is sent. Between {REVIEW_WINDOW_HOURS_MIN} and{" "}
                   {REVIEW_WINDOW_HOURS_MAX}.
                 </FormDescription>

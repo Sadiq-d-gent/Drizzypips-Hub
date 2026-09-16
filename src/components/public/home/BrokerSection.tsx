@@ -18,7 +18,7 @@ const BrokerSection = () => {
           align="left"
           eyebrow="Featured broker"
           title="A simple broker recommendation for new mentees."
-          description="Every student needs a broker account before placing a trade. This is the one recommended for straightforward setup and reliable withdrawals — the broker page has the full rundown."
+          description="Every student needs a broker account before placing a trade. This is the one recommended for straightforward setup and reliable withdrawals. The broker page has the full rundown."
           className="mx-0"
         />
 

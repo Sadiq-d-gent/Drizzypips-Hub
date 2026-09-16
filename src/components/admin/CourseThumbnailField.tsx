@@ -129,7 +129,7 @@ const CourseThumbnailField = ({ value, onChange, persistedUrl }: CourseThumbnail
 
           <p className="text-xs text-muted-foreground">
             {THUMBNAIL_TYPES_LABEL}, up to {MAX_THUMBNAIL_SIZE_LABEL}. A wide image works
-            best — the catalogue crops to 16:9.
+            best, since the catalogue crops to 16:9.
           </p>
         </div>
       </div>

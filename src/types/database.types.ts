@@ -8,7 +8,7 @@
  *
  *   supabase gen types typescript --project-id <project-ref> > src/types/database.types.ts
  *
- * Covers migrations 001-011. Everything below this comment is generator output.
+ * Covers migrations 001-018. Everything below this comment is generator output.
  */
 
 export type Json =
@@ -23,7 +23,7 @@ export type Database = {
   // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
-    PostgrestVersion: "14.15"
+    PostgrestVersion: "14.5"
   }
   graphql_public: {
     Tables: {
@@ -111,6 +111,12 @@ export type Database = {
           duration: string
           id: string
           learnings: string[]
+          mentorship_delivery:
+            | Database["public"]["Enums"]["mentorship_delivery"]
+            | null
+          mentorship_format:
+            | Database["public"]["Enums"]["mentorship_format"]
+            | null
           price: number
           published: boolean
           requirements: string[]
@@ -127,6 +133,12 @@ export type Database = {
           duration: string
           id?: string
           learnings?: string[]
+          mentorship_delivery?:
+            | Database["public"]["Enums"]["mentorship_delivery"]
+            | null
+          mentorship_format?:
+            | Database["public"]["Enums"]["mentorship_format"]
+            | null
           price: number
           published?: boolean
           requirements?: string[]
@@ -143,6 +155,12 @@ export type Database = {
           duration?: string
           id?: string
           learnings?: string[]
+          mentorship_delivery?:
+            | Database["public"]["Enums"]["mentorship_delivery"]
+            | null
+          mentorship_format?:
+            | Database["public"]["Enums"]["mentorship_format"]
+            | null
           price?: number
           published?: boolean
           requirements?: string[]
@@ -151,6 +169,87 @@ export type Database = {
           thumbnail_url?: string | null
           title?: string
           updated_at?: string
+        }
+        Relationships: []
+      }
+      email_outbox: {
+        Row: {
+          attempts: number
+          created_at: string
+          dedupe_key: string | null
+          id: string
+          last_error: string | null
+          payload: Json
+          payload_provider_id: string | null
+          send_after: string
+          sent_at: string | null
+          status: Database["public"]["Enums"]["email_status"]
+          template: string
+          to_email: string
+          updated_at: string
+        }
+        Insert: {
+          attempts?: number
+          created_at?: string
+          dedupe_key?: string | null
+          id?: string
+          last_error?: string | null
+          payload?: Json
+          payload_provider_id?: string | null
+          send_after?: string
+          sent_at?: string | null
+          status?: Database["public"]["Enums"]["email_status"]
+          template: string
+          to_email: string
+          updated_at?: string
+        }
+        Update: {
+          attempts?: number
+          created_at?: string
+          dedupe_key?: string | null
+          id?: string
+          last_error?: string | null
+          payload?: Json
+          payload_provider_id?: string | null
+          send_after?: string
+          sent_at?: string | null
+          status?: Database["public"]["Enums"]["email_status"]
+          template?: string
+          to_email?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      email_verifications: {
+        Row: {
+          attempts: number
+          code_hash: string
+          consumed_at: string | null
+          created_at: string
+          email: string
+          expires_at: string
+          id: string
+          verified_until: string | null
+        }
+        Insert: {
+          attempts?: number
+          code_hash: string
+          consumed_at?: string | null
+          created_at?: string
+          email: string
+          expires_at: string
+          id?: string
+          verified_until?: string | null
+        }
+        Update: {
+          attempts?: number
+          code_hash?: string
+          consumed_at?: string | null
+          created_at?: string
+          email?: string
+          expires_at?: string
+          id?: string
+          verified_until?: string | null
         }
         Relationships: []
       }
@@ -219,6 +318,7 @@ export type Database = {
           receipt_path: string | null
           receipt_size_bytes: number | null
           receipt_uploaded_at: string | null
+          rejection_reason: string | null
           reviewed_at: string | null
           reviewed_by: string | null
           status: Database["public"]["Enums"]["enrollment_status"]
@@ -244,6 +344,7 @@ export type Database = {
           receipt_path?: string | null
           receipt_size_bytes?: number | null
           receipt_uploaded_at?: string | null
+          rejection_reason?: string | null
           reviewed_at?: string | null
           reviewed_by?: string | null
           status?: Database["public"]["Enums"]["enrollment_status"]
@@ -269,6 +370,7 @@ export type Database = {
           receipt_path?: string | null
           receipt_size_bytes?: number | null
           receipt_uploaded_at?: string | null
+          rejection_reason?: string | null
           reviewed_at?: string | null
           reviewed_by?: string | null
           status?: Database["public"]["Enums"]["enrollment_status"]
@@ -340,6 +442,30 @@ export type Database = {
         }
         Relationships: []
       }
+      session_reminders: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+          notified_at: string | null
+          session_at: string
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id?: string
+          notified_at?: string | null
+          session_at: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+          notified_at?: string | null
+          session_at?: string
+        }
+        Relationships: []
+      }
       website_settings: {
         Row: {
           broker_description: string | null
@@ -347,6 +473,8 @@ export type Database = {
           broker_url: string | null
           contact_email: string | null
           countdown_enabled: boolean
+          countdown_reminder_lead_hours: number
+          countdown_reminders_enabled: boolean
           countdown_session_at: string | null
           countdown_title: string | null
           created_at: string
@@ -362,6 +490,8 @@ export type Database = {
           hero_title: string | null
           id: boolean
           instagram_url: string | null
+          mentorship_heading: string | null
+          mentorship_intro: string | null
           signal_group_url: string | null
           telegram_url: string | null
           tiktok_url: string | null
@@ -373,6 +503,8 @@ export type Database = {
           broker_url?: string | null
           contact_email?: string | null
           countdown_enabled?: boolean
+          countdown_reminder_lead_hours?: number
+          countdown_reminders_enabled?: boolean
           countdown_session_at?: string | null
           countdown_title?: string | null
           created_at?: string
@@ -388,6 +520,8 @@ export type Database = {
           hero_title?: string | null
           id?: boolean
           instagram_url?: string | null
+          mentorship_heading?: string | null
+          mentorship_intro?: string | null
           signal_group_url?: string | null
           telegram_url?: string | null
           tiktok_url?: string | null
@@ -399,6 +533,8 @@ export type Database = {
           broker_url?: string | null
           contact_email?: string | null
           countdown_enabled?: boolean
+          countdown_reminder_lead_hours?: number
+          countdown_reminders_enabled?: boolean
           countdown_session_at?: string | null
           countdown_title?: string | null
           created_at?: string
@@ -414,6 +550,8 @@ export type Database = {
           hero_title?: string | null
           id?: boolean
           instagram_url?: string | null
+          mentorship_heading?: string | null
+          mentorship_intro?: string | null
           signal_group_url?: string | null
           telegram_url?: string | null
           tiktok_url?: string | null
@@ -444,6 +582,20 @@ export type Database = {
           total: number
         }[]
       }
+      claim_email_batch: {
+        Args: { p_limit?: number }
+        Returns: {
+          attempts: number
+          id: string
+          payload: Json
+          template: string
+          to_email: string
+        }[]
+      }
+      complete_email_delivery: {
+        Args: { p_error?: string; p_id: string; p_provider_id?: string }
+        Returns: Database["public"]["Enums"]["email_status"]
+      }
       create_enrollment: {
         Args: {
           p_course_slug: string
@@ -462,6 +614,18 @@ export type Database = {
           order_id: string
           status: Database["public"]["Enums"]["enrollment_status"]
         }[]
+      }
+      dispatch_email_outbox: { Args: never; Returns: number }
+      dispatch_session_reminders: { Args: never; Returns: number }
+      enqueue_email: {
+        Args: {
+          p_dedupe_key?: string
+          p_payload?: Json
+          p_send_after?: string
+          p_template: string
+          p_to_email: string
+        }
+        Returns: string
       }
       get_enrollment_availability: {
         Args: never
@@ -503,13 +667,23 @@ export type Database = {
           to_status: Database["public"]["Enums"]["enrollment_status"]
         }[]
       }
+      has_verified_email: { Args: { p_email: string }; Returns: boolean }
       is_admin: { Args: never; Returns: boolean }
       is_valid_receipt_path: { Args: { candidate: string }; Returns: boolean }
       next_enrollment_order_id: { Args: never; Returns: string }
+      request_email_verification: {
+        Args: { p_email: string }
+        Returns: {
+          expires_at: string
+          resend_after: string
+        }[]
+      }
+      requeue_stuck_emails: { Args: { p_older_than?: string }; Returns: number }
       review_enrollment: {
         Args: {
           p_admin_note?: string
           p_enrollment_id: string
+          p_rejection_reason?: string
           p_status: string
         }
         Returns: {
@@ -522,13 +696,31 @@ export type Database = {
           updated_at: string
         }[]
       }
+      subscribe_session_reminder: {
+        Args: { p_email: string }
+        Returns: {
+          session_at: string
+          status: string
+        }[]
+      }
+      verify_email_code: {
+        Args: { p_code: string; p_email: string }
+        Returns: {
+          attempts_remaining: number
+          status: string
+          verified_until: string
+        }[]
+      }
     }
     Enums: {
+      email_status: "queued" | "sending" | "sent" | "failed"
       enrollment_status:
         | "pending_review"
         | "approved"
         | "rejected"
         | "cancelled"
+      mentorship_delivery: "physical" | "online"
+      mentorship_format: "general" | "one_on_one"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -544,12 +736,12 @@ export type Tables<
   DefaultSchemaTableNameOrOptions extends
     | keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
     | { schema: keyof DatabaseWithoutInternals },
-  TableName extends DefaultSchemaTableNameOrOptions extends {
+  TableName extends (DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
         DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
-    : never = never,
+    : never) = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
@@ -573,11 +765,11 @@ export type TablesInsert<
   DefaultSchemaTableNameOrOptions extends
     | keyof DefaultSchema["Tables"]
     | { schema: keyof DatabaseWithoutInternals },
-  TableName extends DefaultSchemaTableNameOrOptions extends {
+  TableName extends (DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
-    : never = never,
+    : never) = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
@@ -598,11 +790,11 @@ export type TablesUpdate<
   DefaultSchemaTableNameOrOptions extends
     | keyof DefaultSchema["Tables"]
     | { schema: keyof DatabaseWithoutInternals },
-  TableName extends DefaultSchemaTableNameOrOptions extends {
+  TableName extends (DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
-    : never = never,
+    : never) = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
@@ -623,11 +815,11 @@ export type Enums<
   DefaultSchemaEnumNameOrOptions extends
     | keyof DefaultSchema["Enums"]
     | { schema: keyof DatabaseWithoutInternals },
-  EnumName extends DefaultSchemaEnumNameOrOptions extends {
+  EnumName extends (DefaultSchemaEnumNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
-    : never = never,
+    : never) = never,
 > = DefaultSchemaEnumNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
@@ -640,11 +832,11 @@ export type CompositeTypes<
   PublicCompositeTypeNameOrOptions extends
     | keyof DefaultSchema["CompositeTypes"]
     | { schema: keyof DatabaseWithoutInternals },
-  CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
+  CompositeTypeName extends (PublicCompositeTypeNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
-    : never = never,
+    : never) = never,
 > = PublicCompositeTypeNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
@@ -659,12 +851,15 @@ export const Constants = {
   },
   public: {
     Enums: {
+      email_status: ["queued", "sending", "sent", "failed"],
       enrollment_status: [
         "pending_review",
         "approved",
         "rejected",
         "cancelled",
       ],
+      mentorship_delivery: ["physical", "online"],
+      mentorship_format: ["general", "one_on_one"],
     },
   },
 } as const

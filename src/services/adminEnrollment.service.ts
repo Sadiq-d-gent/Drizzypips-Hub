@@ -376,7 +376,7 @@ export const deleteEnrollment = async (
     throw new ReviewError(
       error.code === REVIEW_SQLSTATE.NOT_ADMIN
         ? "You don't have permission to delete enrollments."
-        : "The enrollment couldn't be deleted. Its receipt has already been removed — try again.",
+        : "The enrollment couldn't be deleted. Its receipt has already been removed, try again.",
       error.code,
     );
   }

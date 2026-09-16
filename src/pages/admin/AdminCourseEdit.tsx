@@ -64,7 +64,7 @@ const AdminCourseEdit = () => {
                 </a>
               </>
             ) : (
-              "Draft — not visible on the site."
+              "Draft, not visible on the site."
             )
           ) : (
             "Loading course details."
@@ -131,7 +131,7 @@ const AdminCourseEdit = () => {
               <h2 className="text-base font-semibold text-foreground">Delete this course</h2>
               <p className="mt-2 text-sm text-muted-foreground">
                 Removes the course and its thumbnail for good. A course that students have
-                enrolled in cannot be deleted — unpublish it instead.
+                enrolled in cannot be deleted, so unpublish it instead.
               </p>
 
               <Button

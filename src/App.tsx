@@ -4,12 +4,12 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { ThemeProvider } from "next-themes";
 import AOS from "aos";
 import "aos/dist/aos.css";
 
 import AdminGuard from "@/components/admin/AdminGuard";
 import AdminLayout from "@/components/admin/AdminLayout";
+import AppThemeProvider from "@/components/Layout/AppThemeProvider";
 import RouteScrollManager from "@/components/Layout/RouteScrollManager";
 import AdminAccount from "./pages/admin/AdminAccount";
 import AdminCourseEdit from "./pages/admin/AdminCourseEdit";
@@ -49,11 +49,17 @@ const App = () => {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
-        <TooltipProvider>
-          <Toaster />
-          <Sonner />
-          <BrowserRouter>
+      {/*
+        The router is above the theme provider, not below it, because the admin panel renders in
+        light mode while the public site keeps its switch — and that decision is a function of the
+        current path, so the provider needs `useLocation`. See AppThemeProvider, which also records
+        why this is one provider rather than a second one nested around the admin routes.
+      */}
+      <BrowserRouter>
+        <AppThemeProvider>
+          <TooltipProvider>
+            <Toaster />
+            <Sonner />
             <RouteScrollManager />
             <Routes>
               {/* Main Routes */}
@@ -73,7 +79,7 @@ const App = () => {
               <Route path="/refund-policy" element={<RefundPolicy />} />
 
               {/*
-                Admin area. Login sits outside the guard — guarding it would redirect an
+                Admin area. Login sits outside the guard, because guarding it would redirect an
                 administrator away from the page they need in order to sign in.
 
                 The pages below nest under a layout route so the sidebar is not rebuilt on
@@ -103,9 +109,9 @@ const App = () => {
               {/* Catch-all for 404 */}
               <Route path="*" element={<NotFound />} />
             </Routes>
-          </BrowserRouter>
-        </TooltipProvider>
-      </ThemeProvider>
+          </TooltipProvider>
+        </AppThemeProvider>
+      </BrowserRouter>
     </QueryClientProvider>
   );
 };

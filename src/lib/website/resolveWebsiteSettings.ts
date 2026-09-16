@@ -1,4 +1,9 @@
 import { WEBSITE_DEFAULTS } from "@/lib/constants/homepage";
+import {
+  REMINDER_LEAD_HOURS_DEFAULT,
+  REMINDER_LEAD_HOURS_MAX,
+  REMINDER_LEAD_HOURS_MIN,
+} from "@/lib/constants/reminders";
 import type {
   WebsiteContent,
   WebsiteCountdown,
@@ -106,7 +111,32 @@ const resolveCountdown = (
     // Normalised rather than passed through, so the component and the admin preview parse a
     // canonical instant instead of whatever format the column happened to come back in.
     targetAt: moment.toISOString(),
+    remindersEnabled: Boolean(row.countdown_reminders_enabled),
+    reminderLeadHours: resolveLeadHours(row.countdown_reminder_lead_hours),
   };
+};
+
+/**
+ * The lead time, clamped rather than trusted.
+ *
+ * 017 constrains the column to 1..720, but the resolver's contract is that it is defined for
+ * rows the query cannot rule out — including one written before that constraint existed, which
+ * is exactly why `resolveCountdown` re-checks `countdown_enabled` too. `null` from an older row
+ * reads as the column default, and anything outside the range is pulled to the nearest bound
+ * instead of producing a sentence like "we'll email you in 9000 hours".
+ *
+ * A `number` that is not finite (a column edited to `NaN` by a tool that could do it) lands on
+ * the default, because `Math.min`/`Math.max` propagate `NaN` rather than correcting it.
+ */
+const resolveLeadHours = (value: number | null | undefined): number => {
+  if (typeof value !== "number" || !Number.isFinite(value)) {
+    return REMINDER_LEAD_HOURS_DEFAULT;
+  }
+
+  return Math.min(
+    REMINDER_LEAD_HOURS_MAX,
+    Math.max(REMINDER_LEAD_HOURS_MIN, Math.round(value)),
+  );
 };
 
 export const resolveWebsiteSettings = (
@@ -123,6 +153,8 @@ export const resolveWebsiteSettings = (
       resolveStat(row?.hero_stat_3_value, row?.hero_stat_3_label, WEBSITE_DEFAULTS.heroStats[2]),
     ],
     countdown: resolveCountdown(row),
+    mentorshipHeading: orDefault(row?.mentorship_heading, WEBSITE_DEFAULTS.mentorshipHeading),
+    mentorshipIntro: orDefault(row?.mentorship_intro, WEBSITE_DEFAULTS.mentorshipIntro),
     telegramUrl,
     // The only field whose fallback is another field rather than a literal: before this
     // column existed the signals page linked to the general Telegram community, and that

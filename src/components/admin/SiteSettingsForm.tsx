@@ -113,7 +113,7 @@ const SiteSettingsForm = ({ settings, isSubmitting, onSubmit }: SiteSettingsForm
                   />
                 </FormControl>
                 <FormDescription>
-                  Stored, but nothing sends mail yet — no email goes out when an enrollment
+                  Stored, but nothing sends mail yet, no email goes out when an enrollment
                   arrives. Check the queue. Optional until notifications are built.
                 </FormDescription>
                 <FormMessage />

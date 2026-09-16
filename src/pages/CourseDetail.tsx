@@ -124,7 +124,7 @@ const CourseDetailContent = ({ course }: CourseDetailContentProps) => {
               headingId="course-requirements"
               items={course.requirements}
               icon={BadgeCheck}
-              emptyMessage="No prior requirements — this course starts from the beginning."
+              emptyMessage="No prior requirements, this course starts from the beginning."
             />
           </div>
         </div>

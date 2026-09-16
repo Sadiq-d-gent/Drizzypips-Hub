@@ -146,8 +146,8 @@ export const useCoursePublishToggle = () => {
       invalidate(course.id);
       toast.success(
         course.published
-          ? "Course published — it's now visible on the site"
-          : "Course unpublished — it's no longer visible on the site",
+          ? "Course published, it's now visible on the site"
+          : "Course unpublished, it's no longer visible on the site",
       );
     },
     onError: (error) => {

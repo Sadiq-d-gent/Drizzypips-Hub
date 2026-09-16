@@ -34,7 +34,7 @@ const describePasswordError = (error: unknown): string => {
     }
 
     if (error.isInvalidCredentials) {
-      return "Your current password is not correct. You are still signed in — try again.";
+      return "Your current password is not correct. You are still signed in, try again.";
     }
   }
 

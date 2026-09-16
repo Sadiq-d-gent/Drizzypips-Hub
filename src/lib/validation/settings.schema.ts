@@ -10,6 +10,10 @@ import {
   SETTINGS_SHORT_TEXT_MAX,
 } from "@/lib/constants/admin";
 import {
+  REMINDER_LEAD_HOURS_MAX,
+  REMINDER_LEAD_HOURS_MIN,
+} from "@/lib/constants/reminders";
+import {
   SESSION_DATE_PATTERN,
   SESSION_TIME_PATTERN,
   combineSessionDateTime,
@@ -214,6 +218,43 @@ export const websiteSettingsSchema = z
       "Enter the time as HH:MM on a 24-hour clock.",
     ),
 
+    /**
+     * The reminder switch, and how long before the session the email goes out.
+     *
+     * Two independent switches rather than one, and 017 deliberately declines to add a
+     * `check (not countdown_reminders_enabled or countdown_enabled)` tying them together, so
+     * this schema does not invent that rule either. An administrator may reasonably turn the
+     * countdown off for a week while keeping the reminder list armed, and refusing that here
+     * would be a constraint the database does not have.
+     *
+     * The bounds are real, though: 017 has `check (countdown_reminder_lead_hours between 1
+     * and 720)`, so a value outside them comes back as a 23514. Same non-coercing treatment
+     * as `review_window_hours` above, and for the same reason — an empty box arrives as
+     * `NaN`, which invalid_type_error describes honestly, where coercion would call it zero
+     * and complain about the minimum.
+     */
+    countdown_reminders_enabled: z.boolean(),
+    countdown_reminder_lead_hours: z
+      .number({ invalid_type_error: "Enter the reminder lead time in hours." })
+      .int({ message: "Enter a whole number of hours." })
+      .min(REMINDER_LEAD_HOURS_MIN, {
+        message: `Reminders must go out at least ${REMINDER_LEAD_HOURS_MIN} hour before the session.`,
+      })
+      .max(REMINDER_LEAD_HOURS_MAX, {
+        message: `Reminders cannot go out more than ${REMINDER_LEAD_HOURS_MAX} hours before the session.`,
+      }),
+
+    /**
+     * The /mentorship heading and its intro paragraph.
+     *
+     * Ordinary optional text, like the hero copy above: blank means "use the compiled-in
+     * default", and the default is the sentence the client asked that page to communicate.
+     * No structural requirement, because the page's structure comes from the four categories
+     * rather than from these two strings.
+     */
+    mentorship_heading: optionalText(SETTINGS_SHORT_TEXT_MAX),
+    mentorship_intro: optionalText(SETTINGS_LONG_TEXT_MAX),
+
     telegram_url: optionalUrl("The Telegram link"),
     signal_group_url: optionalUrl("The signal group link"),
 
@@ -304,7 +345,7 @@ export const websiteSettingsSchema = z
     if (hasTime && !hasDate) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
-        message: "Add the session date — a time on its own is not a moment.",
+        message: "Add the session date, a time on its own is not a moment.",
         path: ["countdown_session_date"],
       });
     }
@@ -312,7 +353,7 @@ export const websiteSettingsSchema = z
     if (hasDate && !hasTime) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
-        message: "Add the session time — a date on its own is not a moment.",
+        message: "Add the session time, a date on its own is not a moment.",
         path: ["countdown_session_time"],
       });
     }

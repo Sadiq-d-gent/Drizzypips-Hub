@@ -27,18 +27,28 @@ import type { WebsiteSettingsRow } from "@/types/website";
  * `created_at` because nothing displays it. `updated_at` is included: it is what remounts
  * the admin form from persisted values after a save.
  *
- * Exported so `saveWebsiteSettings` can select the same twenty-one columns back. That import
- * runs admin → public, which is the harmless direction; the split this module exists for is
- * the other one, and a second copy of a twenty-one-name list is exactly the kind of thing that
- * drifts.
+ * Exported so `saveWebsiteSettings` can select the same columns back. That import runs
+ * admin → public, which is the harmless direction; the split this module exists for is the
+ * other one, and a second copy of a list this long is exactly the kind of thing that drifts.
  *
  * The three `countdown_*` columns are on the list for the same reason as everything else: 012
  * added them to this table because they are printed in the homepage hero. Note a public page
- * reads all three even though only a configured countdown renders — the switch and the moment
- * are precisely what resolveWebsiteSettings needs in order to decide to render nothing.
+ * reads all three even though only a configured countdown renders, because the switch and the
+ * moment are precisely what resolveWebsiteSettings needs in order to decide to render nothing.
+ *
+ * `mentorship_heading` and `mentorship_intro` were added by 013 alongside the course taxonomy,
+ * because the sentence that explains the four categories and the columns that classify courses
+ * into them are one change.
+ *
+ * `countdown_reminders_enabled` and `countdown_reminder_lead_hours` came with 017. Both are
+ * read publicly for the same reason as `countdown_enabled`: the first decides whether the hero
+ * offers a "Remind me" control at all, and the second is what the dialog tells a visitor about
+ * when the email will arrive. Neither is a permission. 017's `subscribe_session_reminder()`
+ * re-reads this row server-side, so a stale switch in an open tab changes what is drawn and
+ * not what can be done.
  */
 export const WEBSITE_SETTINGS_COLUMNS =
-  "hero_title, hero_subtitle, hero_stat_1_value, hero_stat_1_label, hero_stat_2_value, hero_stat_2_label, hero_stat_3_value, hero_stat_3_label, countdown_enabled, countdown_title, countdown_session_at, telegram_url, signal_group_url, broker_name, broker_description, broker_url, instagram_url, tiktok_url, contact_email, footer_tagline, footer_copyright, updated_at";
+  "hero_title, hero_subtitle, hero_stat_1_value, hero_stat_1_label, hero_stat_2_value, hero_stat_2_label, hero_stat_3_value, hero_stat_3_label, countdown_enabled, countdown_title, countdown_session_at, countdown_reminders_enabled, countdown_reminder_lead_hours, mentorship_heading, mentorship_intro, telegram_url, signal_group_url, broker_name, broker_description, broker_url, instagram_url, tiktok_url, contact_email, footer_tagline, footer_copyright, updated_at";
 
 /**
  * Reads the single website_settings row.

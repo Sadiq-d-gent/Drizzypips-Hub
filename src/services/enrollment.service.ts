@@ -3,6 +3,7 @@ import {
   ENROLLMENT_PAUSED_SQLSTATE,
   RATE_LIMIT_SQLSTATE,
 } from "@/lib/constants/enrollment";
+import { EMAIL_NOT_VERIFIED_SQLSTATE } from "@/lib/constants/verification";
 import { getUntypedSupabaseClient } from "@/lib/supabase/untypedClient";
 import {
   CreateEnrollmentResult,
@@ -59,6 +60,19 @@ export class EnrollmentError extends Error {
   /** `no_data_found` — the course is missing, or unpublished (the RPC does not say which). */
   get isCourseUnavailable() {
     return this.code === "P0002";
+  }
+
+  /**
+   * `EV002` — create_enrollment() refused because the address holds no live verification.
+   *
+   * Added by 016. This is the enforcement point the whole verify step is built around, and
+   * it is reachable however the student got here: a lapsed two-hour window, a second
+   * browser, an edited client, or calling the RPC directly. The page returns them to the
+   * verify step rather than showing a generic failure, because the situation has a specific
+   * remedy and they may already have paid.
+   */
+  get isEmailUnverified() {
+    return this.code === EMAIL_NOT_VERIFIED_SQLSTATE;
   }
 }
 

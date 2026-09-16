@@ -98,7 +98,7 @@ const toSettingsError = (error: SettingsFailure, fallback: string): SettingsErro
       );
     case SETTINGS_SQLSTATE.DUPLICATE_ACTIVE:
       return new SettingsError(
-        "There is already another active set of payment details. Only one can be active at a time — this needs sorting out in the database.",
+        "There is already another active set of payment details. Only one can be active at a time, so this needs sorting out in the database.",
         code,
       );
     default:
@@ -306,6 +306,15 @@ export const saveWebsiteSettings = async (
           input.countdown_session_date,
           input.countdown_session_time,
         ),
+        // Both pass through unconverted: a boolean and an integer are already the column's
+        // shape, so there is no form-to-row difference for this boundary to resolve. The
+        // lead time's 1..720 bound is the schema's and 017's; nothing is clamped here,
+        // because a value that got past both should surface as the 23514 it is rather than
+        // be quietly rewritten on its way into the table.
+        countdown_reminders_enabled: input.countdown_reminders_enabled,
+        countdown_reminder_lead_hours: input.countdown_reminder_lead_hours,
+        mentorship_heading: emptyToNull(input.mentorship_heading),
+        mentorship_intro: emptyToNull(input.mentorship_intro),
         telegram_url: emptyToNull(input.telegram_url),
         signal_group_url: emptyToNull(input.signal_group_url),
         broker_name: emptyToNull(input.broker_name),

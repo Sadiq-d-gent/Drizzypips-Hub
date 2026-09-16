@@ -82,7 +82,7 @@ const CourseDeleteDialog = ({
                   <p>
                     {total} {total === 1 ? "student has" : "students have"} enrolled in this
                     course. An enrollment is a payment record, so the database will not let the
-                    course it points at be destroyed — the delete will be refused.
+                    course it points at be destroyed, so the delete will be refused.
                   </p>
                   <p>
                     To take it off the site, unpublish it instead. It disappears from the

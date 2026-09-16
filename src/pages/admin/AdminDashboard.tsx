@@ -54,7 +54,7 @@ const AdminDashboard = () => {
     const publishedCount = courses.filter((course) => course.published).length;
 
     if (courses.length === 0) {
-      return "No courses yet — students have nothing to enroll in until one is published.";
+      return "No courses yet, so students have nothing to enroll in until one is published.";
     }
 
     if (publishedCount === 0) {

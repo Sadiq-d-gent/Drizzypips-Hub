@@ -140,7 +140,7 @@ export const EnrollmentPanel = ({ enrollment }: { enrollment: AdminEnrollmentDet
       <Field label="Admin note">
         <span className="whitespace-pre-wrap">{enrollment.admin_note}</span>
         <span className="mt-1 block text-xs text-muted-foreground">
-          Internal only — never shown to the student.
+          Internal only, never shown to the student.
         </span>
       </Field>
     ) : null}
@@ -183,7 +183,7 @@ export const CoursePanel = ({ enrollment }: { enrollment: AdminEnrollmentDetail 
         {titleChanged ? (
           <span className="mt-1 flex items-start gap-1.5 text-xs text-warning">
             <AlertTriangle className="mt-0.5 h-3.5 w-3.5 shrink-0" aria-hidden="true" />
-            Changed since submission — was “{enrollment.course_title_snapshot}”
+            Changed since submission, was “{enrollment.course_title_snapshot}”
           </span>
         ) : null}
       </Field>
@@ -193,14 +193,14 @@ export const CoursePanel = ({ enrollment }: { enrollment: AdminEnrollmentDetail 
         {priceChanged ? (
           <span className="mt-1 flex items-start gap-1.5 text-xs text-warning">
             <AlertTriangle className="mt-0.5 h-3.5 w-3.5 shrink-0" aria-hidden="true" />
-            Changed since submission — student agreed to{" "}
+            Changed since submission, student agreed to{" "}
             {formatCoursePrice(Number(enrollment.price_amount), enrollment.price_currency)}
           </span>
         ) : null}
       </Field>
 
       <Field label="Published">
-        {course.published ? "Yes" : "No — not visible to students"}
+        {course.published ? "Yes" : "No, not visible to students"}
       </Field>
 
       <Field label="Public page">
@@ -217,7 +217,7 @@ export const CoursePanel = ({ enrollment }: { enrollment: AdminEnrollmentDetail 
         {slugChanged ? (
           <span className="mt-1 flex items-start gap-1.5 text-xs text-warning">
             <AlertTriangle className="mt-0.5 h-3.5 w-3.5 shrink-0" aria-hidden="true" />
-            Slug changed — was “{enrollment.course_slug_snapshot}”
+            Slug changed, was “{enrollment.course_slug_snapshot}”
           </span>
         ) : null}
       </Field>

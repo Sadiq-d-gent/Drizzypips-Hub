@@ -60,6 +60,25 @@ export type HeroStat = {
 export type WebsiteCountdown = {
   title: string;
   targetAt: string;
+  /**
+   * Whether the "Remind Me" control is offered beside this countdown.
+   *
+   * Carried here rather than read from the raw row so that a consumer holding a countdown at
+   * all knows whether it can offer a reminder, the same way `targetAt` spares it from parsing
+   * the column. It is a presentation flag and nothing more: 017 enforces availability inside
+   * `subscribe_session_reminder()` against the live row, so switching this off while a page is
+   * open hides a button rather than stopping a signup.
+   */
+  remindersEnabled: boolean;
+  /**
+   * How long before the session the reminder goes out, in hours.
+   *
+   * Present so the dialog can tell a visitor when to expect the email — a promise the server
+   * keeps, not one this value enforces. 017's dispatch function reads the same column at send
+   * time, so an administrator moving this number changes the next send and not the sentence
+   * already on screen.
+   */
+  reminderLeadHours: number;
 };
 
 /**
@@ -82,6 +101,10 @@ export type WebsiteContent = {
   heroStats: readonly HeroStat[];
   /** `null` when the countdown is switched off, unset, or unreadable. See WebsiteCountdown. */
   countdown: WebsiteCountdown | null;
+  /** Heading on /mentorship. */
+  mentorshipHeading: string;
+  /** Paragraph under it, explaining the four offerings the page then lists. */
+  mentorshipIntro: string;
   telegramUrl: string;
   /** Falls back to `telegramUrl` while no distinct signal group exists. */
   signalGroupUrl: string;

@@ -18,6 +18,11 @@ import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { WEBSITE_DEFAULTS } from "@/lib/constants/homepage";
 import {
+  REMINDER_LEAD_HOURS_DEFAULT,
+  REMINDER_LEAD_HOURS_MAX,
+  REMINDER_LEAD_HOURS_MIN,
+} from "@/lib/constants/reminders";
+import {
   combineSessionDateTime,
   countdownBreakdown,
   formatSessionMoment,
@@ -76,6 +81,17 @@ const EMPTY_WEBSITE_SETTINGS: WebsiteSettingsInput = {
   countdown_title: "",
   countdown_session_date: "",
   countdown_session_time: "",
+  /**
+   * Off, matching 017's column default, and independent of the switch above.
+   *
+   * A new install has nobody on the list and no session to point them at, so offering the
+   * control would promise an email that has nothing to announce. The lead time still carries
+   * 017's default so that switching reminders on is one click rather than two decisions.
+   */
+  countdown_reminders_enabled: false,
+  countdown_reminder_lead_hours: REMINDER_LEAD_HOURS_DEFAULT,
+  mentorship_heading: "",
+  mentorship_intro: "",
   telegram_url: "",
   signal_group_url: "",
   broker_name: "",
@@ -124,6 +140,14 @@ const toFormValues = (settings: WebsiteSettingsRow | null): WebsiteSettingsInput
     countdown_title: settings.countdown_title ?? "",
     countdown_session_date: session.date,
     countdown_session_time: session.time,
+    countdown_reminders_enabled: settings.countdown_reminders_enabled,
+    // `??` rather than a bare read: the column is NOT NULL in 017, but a row fetched before
+    // that migration reached this environment would arrive without it, and `undefined` in a
+    // number input is what turns a controlled field into an uncontrolled one.
+    countdown_reminder_lead_hours:
+      settings.countdown_reminder_lead_hours ?? REMINDER_LEAD_HOURS_DEFAULT,
+    mentorship_heading: settings.mentorship_heading ?? "",
+    mentorship_intro: settings.mentorship_intro ?? "",
     telegram_url: settings.telegram_url ?? "",
     signal_group_url: settings.signal_group_url ?? "",
     broker_name: settings.broker_name ?? "",
@@ -185,6 +209,29 @@ const INPUT_CLASS = "h-12 rounded-xl border-border bg-card";
 const TEXTAREA_CLASS = "rounded-xl border-border bg-card";
 
 /**
+ * The lead time restated in days, when that is the clearer unit.
+ *
+ * A number of hours is exact and a number of days is legible, and above about two days the
+ * exact figure stops being the one an administrator is checking: 72 is obviously three days
+ * to some people and an arithmetic problem to others. So the field keeps hours, which is what
+ * the column stores, and this adds the translation beneath it only where it helps.
+ *
+ * Reads the resolved preview value rather than the raw field, so a half-typed or out-of-range
+ * entry produces no sentence rather than a wrong one — `resolveLeadHours` clamps, and a clamped
+ * number described as though it were stored would be a small lie in the one place this form is
+ * meant to be trustworthy.
+ */
+const reminderLeadCopy = (leadHours: number | undefined): string => {
+  if (leadHours === undefined || leadHours < 48) {
+    return "";
+  }
+
+  const days = Math.round(leadHours / 24);
+
+  return `That is about ${days} ${days === 1 ? "day" : "days"} ahead.`;
+};
+
+/**
  * One labelled group inside the single form.
  *
  * A real `fieldset`/`legend` rather than a heading and a div, because these are six groups of
@@ -233,6 +280,7 @@ const WebsiteSettingsForm = ({
   const preview = resolveWebsiteSettings(toPreviewContent(form.watch()));
 
   const countdownEnabled = form.watch("countdown_enabled");
+  const remindersEnabled = form.watch("countdown_reminders_enabled");
 
   /**
    * How far off the configured session is, as of this render.
@@ -256,7 +304,7 @@ const WebsiteSettingsForm = ({
           <Info className="mt-0.5 h-4 w-4 shrink-0 text-primary" aria-hidden="true" />
           <p className="text-sm leading-6 text-muted-foreground">
             Every text field is optional. Each one shows the site&apos;s current default as its
-            placeholder — leave it blank to keep that default, or type over it to replace it
+            placeholder, so leave it blank to keep that default, or type over it to replace it
             everywhere it appears. Clearing a field you have set restores the default rather
             than leaving a gap. The one exception is the session countdown, which needs a date
             and a time while it is switched on, because there is no sensible default for when
@@ -304,7 +352,7 @@ const WebsiteSettingsForm = ({
           <div className="space-y-2">
             <p className="text-sm font-medium text-foreground">The three figures</p>
             <p className="text-sm text-muted-foreground">
-              A figure needs its label and a label needs its figure — fill both or leave both
+              A figure needs its label and a label needs its figure, so fill both or leave both
               blank. Keep figures short; they render large, three across.
             </p>
 
@@ -386,7 +434,7 @@ const WebsiteSettingsForm = ({
         <FieldGroup
           divided
           title="Next mentorship session"
-          hint="A live countdown in the homepage hero, under the two buttons. Switched off by default — nothing appears on the site until you turn it on."
+          hint="A live countdown in the homepage hero, under the buttons. Switched off by default, so nothing appears on the site until you turn it on."
         >
           <FormField
             control={form.control}
@@ -426,8 +474,8 @@ const WebsiteSettingsForm = ({
                   />
                 </FormControl>
                 <FormDescription>
-                  Sits on one line above the four numbers. Keep it short — on a phone it wraps
-                  after about forty characters.
+                  Sits on one line above the four numbers. Keep it short, because on a phone it
+                  wraps after about forty characters.
                 </FormDescription>
                 <FormMessage />
               </FormItem>
@@ -490,7 +538,7 @@ const WebsiteSettingsForm = ({
                 </p>
                 <p className="mt-3 text-sm leading-6 text-muted-foreground">
                   {countdownRemaining.reached ? (
-                    "The hero reads “Session is starting” — it counts down to zero and stops there rather than showing negative numbers."
+                    "The hero reads “Session is starting”. It counts down to zero and stops there rather than showing negative numbers."
                   ) : (
                     <>
                       Counting down from{" "}
@@ -524,12 +572,168 @@ const WebsiteSettingsForm = ({
             <div className="flex items-start gap-3 rounded-2xl border border-warning/40 bg-warning/10 p-5">
               <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-warning" aria-hidden="true" />
               <p className="text-sm leading-6 text-muted-foreground">
-                That moment has already passed. Saving is fine — the hero will say the session is
-                starting rather than count backwards — but if the session is over, set the next
+                That moment has already passed. Saving is fine, and the hero will say the session
+                is starting rather than count backwards, but if the session is over, set the next
                 date or switch the countdown off.
               </p>
             </div>
           ) : null}
+
+          {/*
+            The reminder control, inside the countdown group rather than in a group of its own.
+
+            It is one feature: a reminder is a reminder *about this countdown*, and the email
+            says the session title and the session moment. Splitting them across two cards would
+            let an administrator switch reminders on somewhere else on the page while the
+            countdown it depends on sits off up here.
+
+            No pairing is enforced between the two switches, and 017 deliberately declines to add
+            one either. Reminders can stay on while the countdown is briefly off — the list
+            survives, nothing sends, and switching the countdown back on resumes where it left
+            off. What the hint does instead is say plainly what the current combination means, so
+            the administrator is never guessing.
+          */}
+          <FormField
+            control={form.control}
+            name="countdown_reminders_enabled"
+            render={({ field }) => (
+              <FormItem className="flex flex-row items-start justify-between gap-6 rounded-2xl border border-border bg-card p-5">
+                <div className="min-w-0 space-y-1">
+                  <FormLabel className="text-base">Let visitors ask for a reminder</FormLabel>
+                  <FormDescription>
+                    {!countdownEnabled
+                      ? "The countdown is switched off, so nobody can sign up and nothing sends. The list is kept, and turning the countdown back on resumes it."
+                      : field.value
+                        ? "A “Remind me” button sits under the countdown. Visitors who leave an address are emailed before the session, and once only."
+                        : "No reminder button appears. Visitors see the countdown and nothing else."}
+                  </FormDescription>
+                </div>
+                <FormControl>
+                  <Switch
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
+                    aria-label="Let visitors ask for a reminder"
+                  />
+                </FormControl>
+              </FormItem>
+            )}
+          />
+
+          {/*
+            Rendered only when reminders are on, unlike the countdown's date and time, which stay
+            visible while the countdown is off so a session can be scheduled early and published
+            later. The difference is what the field is for: the lead time has nothing to describe
+            while there is no reminder to send, and 017's own default is already the sensible one,
+            so there is nothing to preserve by showing it.
+          */}
+          {remindersEnabled ? (
+            <FormField
+              control={form.control}
+              name="countdown_reminder_lead_hours"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Send the reminder (hours before)</FormLabel>
+                  <FormControl>
+                    <Input
+                      name={field.name}
+                      ref={field.ref}
+                      onBlur={field.onBlur}
+                      type="number"
+                      min={REMINDER_LEAD_HOURS_MIN}
+                      max={REMINDER_LEAD_HOURS_MAX}
+                      step={1}
+                      inputMode="numeric"
+                      // `String(NaN)` would render the literal "NaN" in the box, so an empty or
+                      // half-typed value is shown as empty and reported by the schema instead.
+                      value={Number.isFinite(field.value) ? String(field.value) : ""}
+                      onChange={(event) => field.onChange(event.target.valueAsNumber)}
+                      className={INPUT_CLASS}
+                    />
+                  </FormControl>
+                  <FormDescription>
+                    Between {REMINDER_LEAD_HOURS_MIN} and {REMINDER_LEAD_HOURS_MAX} hours, which is
+                    up to thirty days. The email goes out on the server's schedule at this many
+                    hours before the session, and never a second time to the same address.{" "}
+                    {reminderLeadCopy(preview.countdown?.reminderLeadHours)}
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          ) : null}
+        </FieldGroup>
+
+        {/*
+          The two strings at the top of /mentorship.
+
+          Its own group rather than an addition to Hero, because they belong to a different page
+          and an administrator looking for "the mentorship wording" should not have to find it
+          under a heading about the homepage. The preview repeats both back for the same reason
+          the hero has one: these are the two sentences that explain the four categories, and a
+          blank field previews its default rather than previewing nothing.
+        */}
+        <FieldGroup
+          divided
+          title="Mentorship page"
+          hint="The heading and the paragraph under it on /mentorship, above the physical and online cards."
+        >
+          <FormField
+            control={form.control}
+            name="mentorship_heading"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Heading</FormLabel>
+                <FormControl>
+                  <Input
+                    {...field}
+                    placeholder={WEBSITE_DEFAULTS.mentorshipHeading}
+                    className={INPUT_CLASS}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="mentorship_intro"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Opening paragraph</FormLabel>
+                <FormControl>
+                  <Textarea
+                    {...field}
+                    rows={3}
+                    placeholder={WEBSITE_DEFAULTS.mentorshipIntro}
+                    className={TEXTAREA_CLASS}
+                  />
+                </FormControl>
+                <FormDescription>
+                  This is where the page says the mentorship runs from complete beginner to
+                  advanced, wherever the student is. The two cards below it are built from the
+                  category set on each course, so changing this wording does not change them.
+                </FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <div className="rounded-2xl border border-primary/30 bg-primary/5 p-5">
+            <div className="flex items-center gap-2">
+              <Eye className="h-4 w-4 shrink-0 text-primary" aria-hidden="true" />
+              <p className="text-sm font-semibold text-foreground">
+                What visitors read at the top of the mentorship page
+              </p>
+            </div>
+
+            <p className="mt-4 text-lg font-semibold leading-snug text-foreground">
+              {preview.mentorshipHeading}
+            </p>
+            <p className="mt-2 text-sm leading-6 text-muted-foreground">
+              {preview.mentorshipIntro}
+            </p>
+          </div>
         </FieldGroup>
 
         <FieldGroup
@@ -624,7 +828,7 @@ const WebsiteSettingsForm = ({
                     />
                   </FormControl>
                   <FormDescription>
-                    The affiliate link. Check it after changing it — a wrong one still opens a
+                    The affiliate link. Check it after changing it, since a wrong one still opens a
                     broker, just not yours.
                   </FormDescription>
                   <FormMessage />
@@ -656,7 +860,7 @@ const WebsiteSettingsForm = ({
         <FieldGroup
           divided
           title="Contact and socials"
-          hint="In the footer, on every page. The support WhatsApp number is not here — it is on the Payment details card above, so there is one number students contact."
+          hint="In the footer, on every page. The support WhatsApp number is not here, it is on the Payment details card above, so there is one number students contact."
         >
           <div className="grid gap-6 sm:grid-cols-2">
             <FormField

@@ -385,6 +385,20 @@ deno_version = 2
 # [edge_runtime.secrets]
 # secret_key = "env(SECRET_VALUE)"
 
+# Phase 7. The dispatcher that drains public.email_outbox.
+#
+# verify_jwt = false is deliberate and is not a relaxation. The callers are pg_cron and an
+# operator running a manual drain, neither of which holds a user JWT, and the Supabase anon
+# JWT is published in the frontend bundle, so requiring it would gate nothing. The real gate
+# is the x-dispatch-secret header, checked against EMAIL_DISPATCH_SECRET before the function
+# touches anything, which is what keeps the URL from being an open relay.
+#
+# Its secrets, RESEND_API_KEY, EMAIL_DISPATCH_SECRET, EMAIL_FROM and PUBLIC_SITE_URL, are set
+# with `supabase secrets set` and never appear here: this file is committed.
+[functions.send-email]
+enabled = true
+verify_jwt = false
+
 [analytics]
 enabled = true
 port = 54327

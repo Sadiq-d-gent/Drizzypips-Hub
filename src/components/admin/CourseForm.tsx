@@ -26,6 +26,7 @@ import {
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { COURSE_CURRENCY_OPTIONS } from "@/lib/constants/admin";
+import { MENTORSHIP_DELIVERIES, MENTORSHIP_FORMATS } from "@/lib/courses/categories";
 import { courseDetailPath } from "@/lib/courses/routes";
 import { slugifyCourseTitle } from "@/lib/courses/slug";
 import { CourseCreateInput, courseCreateSchema } from "@/lib/validation/course.schema";
@@ -58,6 +59,8 @@ const EMPTY_COURSE: CourseCreateInput = {
   price: 0,
   currency: "NGN",
   thumbnail_url: null,
+  mentorship_delivery: null,
+  mentorship_format: null,
   published: false,
 };
 
@@ -74,9 +77,28 @@ const toFormValues = (course: Course | undefined): CourseCreateInput =>
         price: Number(course.price),
         currency: course.currency,
         thumbnail_url: course.thumbnail_url,
+        mentorship_delivery: course.mentorship_delivery,
+        mentorship_format: course.mentorship_format,
         published: course.published,
       }
     : EMPTY_COURSE;
+
+/**
+ * The value a Select uses to mean "no category".
+ *
+ * Radix Select treats `""` as "nothing selected" and refuses it as an item value, so an empty
+ * string cannot represent a deliberate choice of "unclassified". A sentinel string keeps
+ * "Not categorised" a real, selectable option, and it is mapped back to `null` on the way into
+ * the form so nothing outside these two fields ever sees it. 013 is why null has to stay
+ * reachable at all: it means the course has not been classified, which is a legitimate state
+ * rather than a missing answer.
+ */
+const UNCATEGORISED = "__none__";
+
+const toSelectValue = (value: string | null): string => value ?? UNCATEGORISED;
+
+const fromSelectValue = (value: string): string | null =>
+  value === UNCATEGORISED ? null : value;
 
 const CourseForm = ({ course, isSubmitting, onSubmit, onCancel }: CourseFormProps) => {
   const isEditing = Boolean(course);
@@ -318,7 +340,7 @@ const CourseForm = ({ course, isSubmitting, onSubmit, onCancel }: CourseFormProp
                     className="h-12 rounded-xl border-border bg-card"
                   />
                 </FormControl>
-                <FormDescription>Free text — shown as written.</FormDescription>
+                <FormDescription>Free text, shown as written.</FormDescription>
                 <FormMessage />
               </FormItem>
             )}
@@ -386,6 +408,85 @@ const CourseForm = ({ course, isSubmitting, onSubmit, onCancel }: CourseFormProp
               </FormItem>
             )}
           />
+        </section>
+
+        {/*
+          Where this course sits on /mentorship. Two independent questions rather than one
+          compound "Physical one-on-one" list, because the page navigates them separately and
+          because either can legitimately be answered without the other.
+
+          Both default to "Not categorised", which is what every course created before this
+          field existed already holds. Such a course still appears in the catalogue, under a
+          general heading, so leaving these alone never takes a program off the site.
+        */}
+        <section className="space-y-4 rounded-2xl border border-border bg-card p-5">
+          <div className="space-y-1">
+            <h2 className="text-base font-medium text-foreground">Mentorship category</h2>
+            <p className="text-sm text-muted-foreground">
+              Decides where the course appears on the mentorship page. Leave either as Not
+              categorised and the course is listed under other programs instead.
+            </p>
+          </div>
+
+          <div className="grid gap-6 sm:grid-cols-2">
+            <FormField
+              control={form.control}
+              name="mentorship_delivery"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Delivery</FormLabel>
+                  <Select
+                    value={toSelectValue(field.value)}
+                    onValueChange={(value) => field.onChange(fromSelectValue(value))}
+                  >
+                    <FormControl>
+                      <SelectTrigger className="h-12 rounded-xl border-border bg-card">
+                        <SelectValue placeholder="Select a delivery mode" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value={UNCATEGORISED}>Not categorised</SelectItem>
+                      {MENTORSHIP_DELIVERIES.map((option) => (
+                        <SelectItem key={option.value} value={option.value}>
+                          {option.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="mentorship_format"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Track</FormLabel>
+                  <Select
+                    value={toSelectValue(field.value)}
+                    onValueChange={(value) => field.onChange(fromSelectValue(value))}
+                  >
+                    <FormControl>
+                      <SelectTrigger className="h-12 rounded-xl border-border bg-card">
+                        <SelectValue placeholder="Select a track" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value={UNCATEGORISED}>Not categorised</SelectItem>
+                      {MENTORSHIP_FORMATS.map((option) => (
+                        <SelectItem key={option.value} value={option.value}>
+                          {option.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
         </section>
 
         <FormField

@@ -116,7 +116,7 @@ const ReviewActions = ({ enrollment }: ReviewActionsProps) => {
             className="mt-2 rounded-xl border-border bg-card"
           />
           <p className="mt-2 text-xs text-muted-foreground">
-            {adminNote.length}/{ADMIN_NOTE_MAX} · Internal only — the student never sees this.
+            {adminNote.length}/{ADMIN_NOTE_MAX} · Internal only, the student never sees this.
           </p>
         </div>
 

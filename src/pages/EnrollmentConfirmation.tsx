@@ -197,7 +197,7 @@ const EnrollmentConfirmation = () => {
       // Canvas or toBlob can fail on a locked-down browser. The record itself is safe,
       // so this degrades to "you can still screenshot this page".
       setCardError(
-        "We couldn't generate the receipt image in this browser. Your enrollment is still recorded — you can save this page instead.",
+        "We couldn't generate the receipt image in this browser. Your enrollment is still recorded, you can save this page instead.",
       );
     } finally {
       setIsBuildingCard(false);
@@ -240,7 +240,7 @@ const EnrollmentConfirmation = () => {
           icon={AlertTriangle}
           tone="destructive"
           title="We couldn't load your enrollment"
-          description="Something went wrong while reaching our records. Your enrollment is not affected — please check your connection and try again."
+          description="Something went wrong while reaching our records. Your enrollment is not affected. Please check your connection and try again."
         >
           <Button
             type="button"

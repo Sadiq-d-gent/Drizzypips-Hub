@@ -38,7 +38,7 @@ export const supportWhatsAppNumber = "+2349035853860";
 export const WEBSITE_DEFAULTS = {
   heroTitle: "Trade with structure, confidence, and a mentor-led path.",
   heroSubtitle:
-    "Structured forex mentorship with a clear path from market foundations to live execution. Browse a program, enroll online, and pay by bank transfer — every enrollment is reviewed by hand.",
+    "Structured forex mentorship with a clear path from market foundations to live execution. Browse a program, enroll online, and pay by bank transfer. Every enrollment is reviewed by hand.",
   heroStats: [
     { value: "5+", label: "Years trading" },
     { value: "1,000+", label: "Students trained" },
@@ -52,6 +52,16 @@ export const WEBSITE_DEFAULTS = {
    * the caption for a date rather than copy the site ships with.
    */
   countdownTitle: "Next live mentorship session",
+  /**
+   * The /mentorship heading and intro.
+   *
+   * The intro is the sentence the client asked that page to communicate, and it is worded so
+   * the two things a newcomer wants to know arrive in one breath: that the program starts from
+   * nothing and goes as far as they want, and that being nowhere near Lagos is not a problem.
+   */
+  mentorshipHeading: "Mentorship built around where you are, and where you are going.",
+  mentorshipIntro:
+    "Mentorship covers learning from complete beginner to advanced, irrespective of where you are, physical or online. Pick the setting that suits you, then choose between a group program and one-on-one guidance.",
   telegramUrl: "https://t.me/Drizzypipz",
   brokerName: "Exness",
   brokerDescription:
@@ -102,7 +112,7 @@ export const featureCards = [
     icon: MessageCircle,
     title: "Direct support",
     description:
-      "Reach a person on WhatsApp or Telegram at any point — choosing a program, paying, or after your receipt is in.",
+      "Reach a person on WhatsApp or Telegram at any point: choosing a program, paying, or after your receipt is in.",
   },
 ] as const;
 

@@ -99,7 +99,7 @@ const AdminAccount = () => {
               ) : null}
 
               <p className="mt-4 text-sm leading-6 text-muted-foreground">
-                Administrator access is granted directly in the database — there is no
+                Administrator access is granted directly in the database, there is no
                 self-service sign-up, and no way to add or remove an administrator from this
                 panel.
               </p>
