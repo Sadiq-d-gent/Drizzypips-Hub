@@ -20,7 +20,12 @@ import {
   groupCoursesByCategory,
 } from "@/lib/courses/categories";
 import type { DeliveryDescriptor, FormatDescriptor } from "@/lib/courses/categories";
-import { areFiltersActive, DEFAULT_COURSE_FILTERS, filterCourses } from "@/lib/courses/filters";
+import {
+  areFiltersActive,
+  DEFAULT_COURSE_FILTERS,
+  filterCourses,
+  PRICE_RANGE_OPTIONS,
+} from "@/lib/courses/filters";
 import { mentorshipWhatsAppMessage } from "@/lib/constants/homepage";
 import { openWhatsApp } from "@/lib/whatsapp";
 import { cn } from "@/lib/utils";
@@ -66,7 +71,12 @@ const FORMAT_PARAM = "format";
 const QUERY_PARAM = "q";
 const PRICE_PARAM = "price";
 
-const PRICE_RANGES = ["all", "under-150", "150-300", "over-300"] as const;
+/**
+ * Derived from the filter options rather than written again, because the two lists disagreeing
+ * is a bug the typechecker cannot see: `isPriceRange` only asserts, so a bucket present in the
+ * buttons but missing here would quietly reject its own `?price=` value and fall back to "all".
+ */
+const PRICE_RANGES = PRICE_RANGE_OPTIONS.map((option) => option.value);
 
 const isPriceRange = (value: string | null): value is CourseFiltersState["priceRange"] =>
   PRICE_RANGES.some((range) => range === value);

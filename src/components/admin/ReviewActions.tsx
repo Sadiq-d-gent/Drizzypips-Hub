@@ -17,7 +17,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useEnrollmentReview } from "@/hooks/useEnrollmentReview";
-import { ADMIN_NOTE_MAX } from "@/lib/constants/admin";
+import { ADMIN_NOTE_MAX, REJECTION_REASON_MAX } from "@/lib/constants/admin";
 import { formatCoursePrice } from "@/lib/courses/price";
 import { AdminEnrollmentDetail, ReviewDecision } from "@/types/admin";
 
@@ -39,9 +39,25 @@ type ReviewActionsProps = {
  * the only record of why. It is written by the same UPDATE that changes the status, so the
  * migration 005 trigger copies it into the history row. It is internal: the student-facing
  * `get_enrollment_by_token()` does not return `admin_note`.
+ *
+ * The rejection reason is a second, separate box, and it appears in the confirmation dialog
+ * rather than beside the note. Both of those are deliberate.
+ *
+ * Separate, because the note above is promised to be private in this component's helper text
+ * and placeholder, and an admin may have written candidly on the strength of that promise.
+ * 016_enrollment_email_notifications.sql therefore excludes `admin_note` from the rejection
+ * email and reads a distinct column instead. One box feeding both would publish the other's
+ * contents.
+ *
+ * In the dialog, because it only exists for one of the two outcomes. On the card it would
+ * either sit inert through every approval or need to appear on click, and the dialog is
+ * already the moment the admin commits to rejecting — which is the moment they are thinking
+ * about how to explain it. Leaving it empty is allowed and simply sends the email without a
+ * reason paragraph.
  */
 const ReviewActions = ({ enrollment }: ReviewActionsProps) => {
   const [adminNote, setAdminNote] = useState("");
+  const [rejectionReason, setRejectionReason] = useState("");
   const [pendingDecision, setPendingDecision] = useState<ReviewDecision | null>(null);
   const review = useEnrollmentReview(enrollment.id);
 
@@ -77,10 +93,19 @@ const ReviewActions = ({ enrollment }: ReviewActionsProps) => {
     }
 
     review.mutate(
-      { decision: pendingDecision, adminNote: adminNote.trim() || undefined },
+      {
+        decision: pendingDecision,
+        adminNote: adminNote.trim() || undefined,
+        // Guarded on the decision as well as on emptiness: reviewActionSchema refuses a
+        // reason attached to an approval, and stale text from a cancelled rejection must not
+        // ride along on the approval that follows it.
+        rejectionReason:
+          pendingDecision === "rejected" ? rejectionReason.trim() || undefined : undefined,
+      },
       {
         onSuccess: () => {
           setAdminNote("");
+          setRejectionReason("");
         },
         onSettled: () => {
           setPendingDecision(null);
@@ -171,11 +196,37 @@ const ReviewActions = ({ enrollment }: ReviewActionsProps) => {
                   This marks {enrollment.student_name}'s payment for{" "}
                   {enrollment.course_title_snapshot} as rejected. This is recorded in the
                   enrollment history and cannot be undone from the admin panel.
-                  {adminNote.trim() ? null : " Consider adding a note explaining why."}
                 </>
               )}
             </AlertDialogDescription>
           </AlertDialogHeader>
+
+          {/*
+            Outside AlertDialogDescription, which renders a <p>: a textarea nested in a
+            paragraph is invalid markup and browsers unnest it, which drops it out of the
+            dialog's described-by region.
+          */}
+          {pendingDecision === "rejected" ? (
+            <div>
+              <Label htmlFor="rejection-reason" className="text-sm">
+                Reason for the student <span className="text-muted-foreground">(optional)</span>
+              </Label>
+              <Textarea
+                id="rejection-reason"
+                value={rejectionReason}
+                onChange={(event) => setRejectionReason(event.target.value)}
+                maxLength={REJECTION_REASON_MAX}
+                rows={3}
+                disabled={review.isPending}
+                placeholder="e.g. The receipt shows a transfer of a different amount. Send the correct receipt and we will review again."
+                className="mt-2 rounded-xl border-border bg-card"
+              />
+              <p className="mt-2 text-xs text-muted-foreground">
+                {rejectionReason.length}/{REJECTION_REASON_MAX} · Included in the rejection
+                email. The admin note above stays internal and is never sent.
+              </p>
+            </div>
+          ) : null}
 
           <AlertDialogFooter>
             <AlertDialogCancel disabled={review.isPending} className="min-h-11 rounded-xl">

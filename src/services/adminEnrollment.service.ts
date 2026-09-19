@@ -272,6 +272,19 @@ export const fetchEnrollmentHistory = async (
  * The note is written in the same UPDATE as the status so the
  * enrollments_log_status_change trigger from migration 005 copies it into the history row.
  * History stays trigger-generated; nothing in this file writes to it.
+ *
+ * `p_rejection_reason` is sent only for a rejection, and only when the admin actually wrote
+ * one. Two separate reasons, neither of which is style:
+ *
+ *   The database writes `rejection_reason = coalesce(v_reason, e.rejection_reason)`
+ *   unconditionally (016:509), so naming the parameter on an approval would persist a
+ *   rejection explanation onto an approved row. reviewActionSchema refuses that combination
+ *   before it reaches here; this is the second of the two gates.
+ *
+ *   An omitted key is not the same as an explicit null to PostgREST. `undefined` is dropped
+ *   by JSON.stringify, so the argument goes unnamed and the function's `default null`
+ *   applies — which is also what lets this call keep working against either signature while
+ *   016 is mid-deploy.
  */
 export const reviewEnrollment = async (
   enrollmentId: string,
@@ -284,6 +297,8 @@ export const reviewEnrollment = async (
     p_enrollment_id: enrollmentId,
     p_status: action.decision,
     p_admin_note: action.adminNote?.trim() || undefined,
+    p_rejection_reason:
+      action.decision === "rejected" ? action.rejectionReason?.trim() || undefined : undefined,
   });
 
   if (error) {

@@ -8,7 +8,7 @@
  *
  *   supabase gen types typescript --project-id <project-ref> > src/types/database.types.ts
  *
- * Covers migrations 001-018. Everything below this comment is generator output.
+ * Covers migrations 001-019. Everything below this comment is generator output.
  */
 
 export type Json =
@@ -647,6 +647,7 @@ export type Database = {
           receipt_mime_type: string
           receipt_size_bytes: number
           receipt_uploaded_at: string
+          rejection_reason: string
           status: Database["public"]["Enums"]["enrollment_status"]
           student_email: string
           student_name: string

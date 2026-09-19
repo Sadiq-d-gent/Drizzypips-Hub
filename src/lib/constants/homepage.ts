@@ -55,13 +55,15 @@ export const WEBSITE_DEFAULTS = {
   /**
    * The /mentorship heading and intro.
    *
-   * The intro is the sentence the client asked that page to communicate, and it is worded so
-   * the two things a newcomer wants to know arrive in one breath: that the program starts from
-   * nothing and goes as far as they want, and that being nowhere near Lagos is not a problem.
+   * The heading is the client's own sentence, word for word. It used to be paraphrased into
+   * house style with the client's wording demoted to the intro, which read well but was not
+   * what they asked the page to say, so the two have swapped roles: the heading carries the
+   * promise, the intro only tells a visitor how to navigate the four programs below it.
    */
-  mentorshipHeading: "Mentorship built around where you are, and where you are going.",
+  mentorshipHeading:
+    "Mentorship covers learning from beginners to advanced knowledge irrespective of where you are either physical or online",
   mentorshipIntro:
-    "Mentorship covers learning from complete beginner to advanced, irrespective of where you are, physical or online. Pick the setting that suits you, then choose between a group program and one-on-one guidance.",
+    "Pick the setting that suits you, then choose between a group program and one-on-one guidance.",
   telegramUrl: "https://t.me/Drizzypipz",
   brokerName: "Exness",
   brokerDescription:

@@ -46,6 +46,17 @@ export const ADMIN_SEARCH_DEBOUNCE_MS = 300;
 export const ADMIN_NOTE_MAX = 1000;
 
 /**
+ * Cap on the student-facing rejection reason.
+ *
+ * Unlike ADMIN_NOTE_MAX directly above, this one *is* mirroring a real constraint:
+ * `enrollments.rejection_reason` in 016_enrollment_email_notifications.sql carries
+ * `check (rejection_reason is null or char_length(rejection_reason) <= 1000)`. Exceeding it
+ * raises 23514 from the database rather than being quietly accepted, so the number here and
+ * the number there must stay in step.
+ */
+export const REJECTION_REASON_MAX = 1000;
+
+/**
  * Tailwind classes for each status pill.
  *
  * `warning` and `success` are project tokens defined in tailwind.config.ts and
@@ -213,3 +224,73 @@ export const COUNTDOWN_TITLE_MAX = 60;
  * its policy is stricter than this number.
  */
 export const PASSWORD_MIN_LENGTH = 8;
+
+/**
+ * Rows shown in the email delivery log.
+ *
+ * A window on the newest rows, not the table. 014 built `email_outbox_created_at_idx`
+ * ("the admin delivery log reads newest first across all statuses") for exactly this read,
+ * so the ordering here is the one that index serves. The panel states the total alongside
+ * the window so a short list never reads as an empty outbox.
+ */
+export const EMAIL_LOG_LIMIT = 8;
+
+/**
+ * Attempts after which a queued email is abandoned rather than retried.
+ *
+ * Mirrors a real number in the database, so it belongs beside REJECTION_REASON_MAX rather
+ * than beside the layout caps: `complete_email_delivery()` and `requeue_stuck_emails()` in
+ * 018_email_dispatch.sql both branch on `attempts >= 5`. Used only to phrase how close a
+ * retrying row is to being given up on, never to decide anything.
+ */
+export const EMAIL_MAX_ATTEMPTS = 5;
+
+/**
+ * How long a claimed email may sit in `sending` before it is presumed abandoned.
+ *
+ * 018's own default for `requeue_stuck_emails(p_older_than interval default '10 minutes')`.
+ * A row is `sending` only between a claim and its outcome, and nothing but that function
+ * ever looks at the state again, so one that has been there longer than this means a
+ * dispatcher died mid-send. The panel says so; the recovery is still the function's.
+ */
+export const EMAIL_STUCK_AFTER_MINUTES = 10;
+
+/**
+ * Human labels for `public.email_status`.
+ *
+ * The enum's own labels are accurate and unhelpful: "queued" and "sending" describe the
+ * row's position in a pipeline the administrator did not ask about. These describe the
+ * email.
+ */
+export const EMAIL_STATUS_LABELS = {
+  queued: "Waiting to send",
+  sending: "Sending",
+  sent: "Delivered",
+  failed: "Failed",
+} as const;
+
+/** Pill classes per email status, following ENROLLMENT_STATUS_TONES. */
+export const EMAIL_STATUS_TONES = {
+  queued: "border-warning/30 bg-warning/10 text-warning",
+  sending: "border-primary/30 bg-primary/10 text-primary",
+  sent: "border-success/30 bg-success/10 text-success",
+  failed: "border-destructive/30 bg-destructive/10 text-destructive",
+} as const;
+
+/**
+ * Human labels for the `template` column.
+ *
+ * `template` is plain `text` in 014, not an enum, so this is a lookup with a fallback
+ * rather than an exhaustive map: a template added by a later migration renders its own raw
+ * name instead of disappearing from the log or crashing the row.
+ */
+export const EMAIL_TEMPLATE_LABELS: Record<string, string> = {
+  // Each key is read from its own enqueue_email() call site, not inferred:
+  // 015:294, 016:383, 016:549 (both arms), 017:316 and 017:392.
+  verification_code: "Email verification code",
+  enrollment_pending: "Enrollment received",
+  enrollment_approved: "Enrollment approved",
+  enrollment_rejected: "Enrollment rejected",
+  reminder_confirmed: "Reminder confirmed",
+  session_reminder: "Session reminder",
+};

@@ -52,10 +52,18 @@ type StatusPresentation = {
  * anything next. Rejected and cancelled therefore both end in "message us with your
  * order ID" — the order ID is the reference a human can look up, which is exactly what
  * it is for.
+ *
+ * `hasRejectionReason` exists because the rejected copy used to name a cause. "We
+ * couldn't match your receipt to a payment we received" is a fair guess when there is
+ * nothing else to say, and it is wrong the moment an administrator writes a different
+ * reason: a student rejected for enrolling in the wrong course would read a confident
+ * sentence about their receipt, then the real reason underneath it. When a reason
+ * exists, this text steps back and lets it speak.
  */
 const describeStatus = (
   status: EnrollmentStatus,
   reviewWindowHours: number,
+  hasRejectionReason: boolean,
 ): StatusPresentation => {
   switch (status) {
     case "approved":
@@ -71,8 +79,9 @@ const describeStatus = (
         icon: XCircle,
         pill: "border-destructive/30 bg-destructive/10 text-destructive",
         heading: "This enrollment wasn't approved",
-        description:
-          "We couldn't match your receipt to a payment we received. Message us with your order ID and we'll look into it with you.",
+        description: hasRejectionReason
+          ? "Our team left a note explaining why. If something there looks wrong, message us with your order ID and we'll look into it with you."
+          : "We couldn't match your receipt to a payment we received. Message us with your order ID and we'll look into it with you.",
       };
     case "cancelled":
       return {
@@ -271,7 +280,18 @@ const EnrollmentConfirmation = () => {
   function renderEnrollment(record: EnrollmentSummary) {
     const reviewWindow =
       paymentSettings.data?.review_window_hours ?? DEFAULT_REVIEW_WINDOW_HOURS;
-    const presentation = describeStatus(record.status, reviewWindow);
+
+    // Trimmed before it is treated as present, so a reason that is only whitespace counts
+    // as no reason rather than rendering a heading with nothing under it. 019 already
+    // guarantees this is null unless the status is `rejected`, so the status is not
+    // re-checked here.
+    const rejectionReason = record.rejection_reason?.trim() || null;
+
+    const presentation = describeStatus(
+      record.status,
+      reviewWindow,
+      Boolean(rejectionReason),
+    );
     const StatusIcon = presentation.icon;
 
     const whatsappUrl = createWhatsAppUrl(
@@ -291,6 +311,27 @@ const EnrollmentConfirmation = () => {
               {presentation.heading}
             </h1>
             <p className="mt-3 leading-7 text-muted-foreground">{presentation.description}</p>
+
+            {/*
+              The administrator's own words, above the order ID rather than below the
+              details table, because it is the answer to the question the student opened
+              this page with. This is the same text the rejection email carries; the email
+              and the page it links to disagreeing was the problem 019 exists to fix.
+
+              `whitespace-pre-line` keeps the paragraph breaks an admin typed and collapses
+              nothing else. React escapes the text, so there is no markup to sanitise, and
+              `break-words` handles a pasted reference with no spaces in it.
+            */}
+            {rejectionReason ? (
+              <div className="mt-6 rounded-2xl border border-destructive/30 bg-destructive/5 p-5">
+                <h2 className="text-sm font-semibold text-foreground">
+                  Why it wasn't approved
+                </h2>
+                <p className="mt-2 whitespace-pre-line break-words leading-7 text-muted-foreground">
+                  {rejectionReason}
+                </p>
+              </div>
+            ) : null}
 
             <div className="mt-7 flex flex-wrap items-center gap-3">
               <span className="rounded-xl border border-border bg-muted/40 px-4 py-2 font-mono text-sm font-medium text-foreground">

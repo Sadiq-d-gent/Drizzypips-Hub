@@ -1,8 +1,10 @@
-import { AlertTriangle, CreditCard, Globe, Info, ToggleLeft } from "lucide-react";
+import { AlertTriangle, BellRing, CreditCard, Globe, Info, Mail, ToggleLeft } from "lucide-react";
 
 import AdminSection from "@/components/admin/AdminSection";
 import AdminStateCard from "@/components/admin/AdminStateCard";
+import EmailDeliveryPanel from "@/components/admin/EmailDeliveryPanel";
 import PaymentSettingsForm from "@/components/admin/PaymentSettingsForm";
+import ReminderSubscribersPanel from "@/components/admin/ReminderSubscribersPanel";
 import SiteSettingsForm from "@/components/admin/SiteSettingsForm";
 import WebsiteSettingsForm from "@/components/admin/WebsiteSettingsForm";
 import { Button } from "@/components/ui/button";
@@ -17,13 +19,18 @@ import {
 import { useWebsiteSettings } from "@/hooks/useWebsiteSettings";
 
 /**
- * The three settings tables, edited on one screen.
+ * The three settings tables, edited on one screen, and what they are currently doing.
  *
  * Three independent sections, each with its own query, its own form and its own save button.
  * That separation is the point of the screen: an account number left blank must not be able
  * to stop someone from pausing enrollments, pausing must not require re-validating the
  * payment instructions, and neither must stand between an administrator and a corrected
  * Telegram link. Nothing is shared between them but the page shell.
+ *
+ * Two read-only panels follow them. Both report on settings edited above rather than adding
+ * settings of their own: the reminder counts answer "if I save this countdown, who gets an
+ * email", and the delivery log answers "did it actually arrive". Neither writes anything, and
+ * neither needed a policy that did not already exist.
  */
 
 /** Placeholder heights roughly matching each form, so the page does not jump on load. */
@@ -54,7 +61,8 @@ const AdminSettings = () => {
         <h1 className="text-3xl font-bold tracking-tight text-foreground">Settings</h1>
         <p className="mt-2 text-sm text-muted-foreground">
           Bank details students pay into, the switch that closes enrollment, and the copy and
-          links on the public pages. All of it takes effect as soon as you save.
+          links on the public pages. All of it takes effect as soon as you save. Underneath,
+          who is waiting on a session reminder and what the site has emailed.
         </p>
       </div>
 
@@ -188,6 +196,52 @@ const AdminSettings = () => {
               onSubmit={(values) => saveWebsite.mutate(values)}
             />
           )}
+        </AdminSection>
+
+        <AdminSection
+          divided
+          icon={BellRing}
+          title="Session reminders"
+          description="Who has asked to be emailed before the next session, and whether the countdown settings above will actually send to them."
+        >
+          {/*
+            Gated on the same query as the form above, and for a related reason. Every sentence
+            this panel prints is about the countdown columns, so a failed read would have it
+            describing a countdown it could not see — and the resolver fails open, meaning the
+            failure would render as the confident and wrong sentence "the countdown is switched
+            off". The subscriber counts come from their own query and are unaffected; they are
+            simply not worth showing under a caption that might be false.
+          */}
+          {websiteQuery.isLoading ? (
+            <FormSkeleton rows={["h-32", "h-20"]} />
+          ) : websiteQuery.isError ? (
+            <AdminStateCard
+              icon={AlertTriangle}
+              title="Couldn't load the countdown settings"
+              description="The subscriber list is unaffected and reminders are still being handled normally, but without the countdown settings this can't tell you what will be sent. Please try again."
+              tone="destructive"
+            >
+              <Button
+                className="btn-premium min-h-11"
+                onClick={() => {
+                  void websiteQuery.refetch();
+                }}
+              >
+                Try again
+              </Button>
+            </AdminStateCard>
+          ) : (
+            <ReminderSubscribersPanel settings={website} />
+          )}
+        </AdminSection>
+
+        <AdminSection
+          divided
+          icon={Mail}
+          title="Email delivery"
+          description="Every verification code, enrollment decision and session reminder the site has sent, and what became of it."
+        >
+          <EmailDeliveryPanel />
         </AdminSection>
       </div>
     </div>

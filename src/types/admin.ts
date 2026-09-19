@@ -144,3 +144,72 @@ export type AdminSettings = {
   enrollment_paused_message: string | null;
   updated_at: string;
 };
+
+/** `public.email_status` from 014_email_outbox.sql, in the order the enum declares. */
+export type EmailStatus = "queued" | "sending" | "sent" | "failed";
+
+/**
+ * How many rows sit in each state of the outbox.
+ *
+ * Four numbers rather than a total, because the total is the least informative of them.
+ * `failed` is the one that needs a person, `queued` growing while `sent` does not is the
+ * shape of a dispatcher that is not running, and `sending` is only ever transient — see
+ * EMAIL_STUCK_AFTER_MINUTES.
+ */
+export type EmailDeliveryCounts = Record<EmailStatus, number>;
+
+/**
+ * One row of the delivery log.
+ *
+ * `payload` is deliberately absent. 015 puts the plaintext verification code in it and
+ * 018's `complete_email_delivery()` redacts it on the same UPDATE that marks the row sent,
+ * so a queued row's payload still holds a live code. Selecting it into the admin panel
+ * would widen that window from "in the database until delivery" to "in a browser tab for as
+ * long as it is open", for no gain: nothing the log shows needs it.
+ *
+ * `to_email` is present. It is the one field that makes a delivery failure actionable, and
+ * the admin reading it already sees the same addresses in the enrollment queue.
+ */
+export type EmailLogEntry = {
+  id: string;
+  template: string;
+  to_email: string;
+  status: EmailStatus;
+  attempts: number;
+  last_error: string | null;
+  send_after: string;
+  sent_at: string | null;
+  created_at: string;
+  /**
+   * When the row last changed, which for a `sending` row is when it was claimed: 018's
+   * `claim_email_batch()` sets the status and 014's BEFORE UPDATE trigger moves this in the
+   * same statement. That is the comparison `requeue_stuck_emails()` makes to decide a
+   * dispatcher died mid-send, and the only reason this column is selected.
+   */
+  updated_at: string;
+};
+
+/** The delivery panel's whole dataset: the four counts, and a window on the newest rows. */
+export type EmailDelivery = {
+  counts: EmailDeliveryCounts;
+  log: EmailLogEntry[];
+};
+
+/**
+ * Reminder subscriber counts.
+ *
+ * `awaiting` is everyone still owed an email, whatever session they are pointed at.
+ * `awaitingForSession` narrows that to the session currently configured in
+ * `website_settings`, and is null when no session is configured — which is not zero, and
+ * must not render as zero.
+ *
+ * The two are normally equal: 017's reschedule trigger repoints every pending row when an
+ * administrator moves the date, precisely so nobody is stranded on a session that will
+ * never arrive. A gap between them means some pending rows were not repointed, which is
+ * worth showing rather than averaging away.
+ */
+export type ReminderStats = {
+  awaiting: number;
+  awaitingForSession: number | null;
+  total: number;
+};

@@ -1,6 +1,11 @@
 import { z } from "zod";
 
-import { ADMIN_NOTE_MAX, ENROLLMENT_PAGE_SIZE, PASSWORD_MIN_LENGTH } from "@/lib/constants/admin";
+import {
+  ADMIN_NOTE_MAX,
+  ENROLLMENT_PAGE_SIZE,
+  PASSWORD_MIN_LENGTH,
+  REJECTION_REASON_MAX,
+} from "@/lib/constants/admin";
 
 /**
  * Admin form and URL schemas.
@@ -72,20 +77,46 @@ export const passwordChangeSchema = z
 export type PasswordChangeInput = z.infer<typeof passwordChangeSchema>;
 
 /**
- * An approve/reject decision plus its optional note.
+ * An approve/reject decision, its internal note, and the student-facing rejection reason.
  *
  * `decision` is an enum of exactly the two outcomes review_enrollment() accepts, so the
  * UI cannot ask for `cancelled` or an invented status. The database re-checks this and
  * raises ST001 regardless.
+ *
+ * `adminNote` and `rejectionReason` are two fields rather than one on purpose, and the
+ * reason is a promise this project already made. The admin note is documented as internal
+ * in four places — the comment on get_enrollment_by_token() at 002:472-475, the doc comment
+ * on ReviewActions, that component's helper text, and its placeholder — so
+ * 016_enrollment_email_notifications.sql deliberately excludes it from the rejection email
+ * and adds a separate column for copy the admin knows the student will read. Merging them
+ * here would retroactively publish notes written under a promise of privacy.
+ *
+ * `rejectionReason` is refused alongside an approval rather than ignored. The database
+ * writes `rejection_reason = coalesce(v_reason, e.rejection_reason)` unconditionally
+ * (016:509) and only omits it from the payload when the status is not `rejected`, so an
+ * approval carrying one would persist a rejection explanation on an approved enrollment.
+ * That row would then be wrong in the admin UI and in the history, silently.
  */
-export const reviewActionSchema = z.object({
-  decision: z.enum(["approved", "rejected"]),
-  adminNote: z
-    .string()
-    .trim()
-    .max(ADMIN_NOTE_MAX, { message: `Keep the note under ${ADMIN_NOTE_MAX} characters.` })
-    .optional(),
-});
+export const reviewActionSchema = z
+  .object({
+    decision: z.enum(["approved", "rejected"]),
+    adminNote: z
+      .string()
+      .trim()
+      .max(ADMIN_NOTE_MAX, { message: `Keep the note under ${ADMIN_NOTE_MAX} characters.` })
+      .optional(),
+    rejectionReason: z
+      .string()
+      .trim()
+      .max(REJECTION_REASON_MAX, {
+        message: `Keep the reason under ${REJECTION_REASON_MAX} characters.`,
+      })
+      .optional(),
+  })
+  .refine((value) => value.decision === "rejected" || !value.rejectionReason, {
+    message: "A rejection reason cannot accompany an approval.",
+    path: ["rejectionReason"],
+  });
 
 export type ReviewActionInput = z.infer<typeof reviewActionSchema>;
 

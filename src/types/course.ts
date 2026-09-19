@@ -17,5 +17,5 @@ export type MentorshipFormat = Database["public"]["Enums"]["mentorship_format"];
 
 export type CourseFilters = {
   query: string;
-  priceRange: "all" | "under-150" | "150-300" | "over-300";
+  priceRange: "all" | "under-250k" | "250k-450k" | "over-450k";
 };

@@ -112,6 +112,19 @@ export type EnrollmentSummary = {
   status: EnrollmentStatus;
   created_at: string;
   updated_at: string;
+  /**
+   * Why the enrollment was rejected, in the admin's own words. Added by migration 019,
+   * which is also where the two ways this can be null are decided:
+   *
+   *   - the admin rejected it without writing anything, which 016 allows; or
+   *   - the status is not `rejected`, in which case the function returns null even if a
+   *     reason is still stored against the row from an earlier decision.
+   *
+   * So a page rendering this never has to ask whether the reason matches the status. It
+   * is `admin_note`'s counterpart, not its alias: `admin_note` is private to the admin
+   * panel and this RPC does not return it at all.
+   */
+  rejection_reason: string | null;
 };
 
 /** Metadata for a receipt that has finished uploading to the private bucket. */
