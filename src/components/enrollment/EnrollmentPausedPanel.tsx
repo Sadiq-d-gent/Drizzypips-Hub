@@ -23,8 +23,8 @@ type EnrollmentPausedPanelProps = {
  * `whitespace-pre-line` to survive. Everything else matches that card, so the two read as the
  * same component.
  *
- * The course is still listed and still browsable — only enrolment is closed — so the primary
- * action goes back to the course rather than away from it.
+ * The program is still listed and still browsable, only enrolment is closed, so the primary
+ * action goes back to the program rather than away from it.
  */
 const EnrollmentPausedPanel = ({
   courseTitle,

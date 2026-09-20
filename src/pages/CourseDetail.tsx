@@ -89,7 +89,7 @@ const CourseDetailContent = ({ course }: CourseDetailContentProps) => {
               <span className="flex items-center gap-2">
                 <ListChecks className="h-4 w-4 shrink-0 text-success" aria-hidden="true" />
                 <span>
-                  {course.learnings.length} {course.learnings.length === 1 ? "topic" : "topics"}
+                  {course.learnings.length} {course.learnings.length === 1 ? "benefit" : "benefits"}
                 </span>
               </span>
             ) : null}
@@ -97,7 +97,7 @@ const CourseDetailContent = ({ course }: CourseDetailContentProps) => {
 
           <Card className="mt-10 rounded-3xl border-border bg-card shadow-premium">
             <CardContent className="p-6 sm:p-8">
-              <h2 className="text-2xl font-bold tracking-tight text-foreground">About this course</h2>
+              <h2 className="text-2xl font-bold tracking-tight text-foreground">About this program</h2>
               <div className="mt-6 space-y-4 text-base leading-8 text-muted-foreground">
                 {course.description
                   .split(/\n{2,}/)
@@ -112,11 +112,11 @@ const CourseDetailContent = ({ course }: CourseDetailContentProps) => {
 
           <div className="mt-8 grid gap-6 md:grid-cols-2">
             <CourseDetailList
-              title="What you'll learn"
+              title="What's included"
               headingId="course-learnings"
               items={course.learnings}
               icon={CircleCheck}
-              emptyMessage="The topic breakdown for this course is being finalised."
+              emptyMessage="The list of what this program includes is being finalised."
             />
 
             <CourseDetailList
@@ -124,7 +124,7 @@ const CourseDetailContent = ({ course }: CourseDetailContentProps) => {
               headingId="course-requirements"
               items={course.requirements}
               icon={BadgeCheck}
-              emptyMessage="No prior requirements, this course starts from the beginning."
+              emptyMessage="No prior requirements, this program starts from the beginning."
             />
           </div>
         </div>
@@ -142,17 +142,18 @@ const CourseDetailContent = ({ course }: CourseDetailContentProps) => {
                 <dd className="font-medium text-foreground">{course.duration}</dd>
               </div>
               <div className="flex items-center justify-between gap-4">
-                <dt className="text-muted-foreground">Topics covered</dt>
+                <dt className="text-muted-foreground">Benefits</dt>
                 <dd className="font-medium text-foreground">{course.learnings.length}</dd>
               </div>
             </dl>
 
             <Button asChild className="btn-premium mt-8 min-h-12 w-full">
-              <Link to={courseEnrollmentPath(course.slug)}>Enroll Now</Link>
+              <Link to={courseEnrollmentPath(course.slug)}>Enroll in Program</Link>
             </Button>
 
             <p className="mt-4 text-center text-sm leading-6 text-muted-foreground">
-              Payment is not available yet. You&apos;ll be taken to the enrollment step.
+              Enroll online, then pay by bank transfer and upload your receipt. Every enrollment is
+              reviewed by hand.
             </p>
           </CardContent>
         </Card>
@@ -166,15 +167,15 @@ const CourseDetail = () => {
 
   const renderStatusMessage = () => {
     if (isPending) {
-      return "Loading course…";
+      return "Loading program…";
     }
 
     if (isError) {
-      return "This course could not be loaded.";
+      return "This program could not be loaded.";
     }
 
     if (!course) {
-      return "Course not found.";
+      return "Program not found.";
     }
 
     return `${course.title} loaded.`;
@@ -190,8 +191,8 @@ const CourseDetail = () => {
         <CourseStateCard
           icon={AlertTriangle}
           tone="destructive"
-          title="We couldn't load this course"
-          description="Something went wrong while reaching our course library. Please check your connection and try again."
+          title="We couldn't load this program"
+          description="Something went wrong while reaching our program library. Please check your connection and try again."
         >
           <Button
             type="button"
@@ -214,13 +215,13 @@ const CourseDetail = () => {
     }
 
     // fetchCourseBySlug filters on published = true, and RLS hides unpublished rows from
-    // anonymous visitors, so a draft course is indistinguishable from a missing one here.
+    // anonymous visitors, so a draft program is indistinguishable from a missing one here.
     if (!course) {
       return (
         <CourseStateCard
           icon={SearchX}
-          title="We couldn't find that course"
-          description="This course may have been renamed, unpublished, or the link may be incorrect. Browse the catalogue to find what you're looking for."
+          title="We couldn't find that program"
+          description="This program may have been renamed, unpublished, or the link may be incorrect. Browse the catalogue to find what you're looking for."
         >
           <Button asChild className="btn-premium min-h-11">
             <Link to={MENTORSHIP_PATH}>

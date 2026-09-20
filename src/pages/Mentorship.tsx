@@ -275,19 +275,19 @@ const Mentorship = () => {
 
   const renderStatusMessage = () => {
     if (isPending) {
-      return "Loading courses…";
+      return "Loading programs…";
     }
 
     if (isError) {
-      return "Courses could not be loaded.";
+      return "Programs could not be loaded.";
     }
 
     if (courses.length === 0) {
-      return "No courses are available yet.";
+      return "No programs are available yet.";
     }
 
     return `Showing ${visibleCount} of ${totalCount} ${
-      totalCount === 1 ? "course" : "courses"
+      totalCount === 1 ? "program" : "programs"
     }.`;
   };
 
@@ -390,8 +390,8 @@ const Mentorship = () => {
         <StatusCard
           icon={AlertTriangle}
           tone="destructive"
-          title="We couldn't load the courses"
-          description="Something went wrong while reaching our course library. Please check your connection and try again."
+          title="We couldn't load the programs"
+          description="Something went wrong while reaching our program library. Please check your connection and try again."
         >
           <Button
             type="button"
@@ -423,7 +423,7 @@ const Mentorship = () => {
         <StatusCard
           icon={BookOpen}
           tone="primary"
-          title="No courses published yet"
+          title="No programs published yet"
           description="New mentorship programs are on the way. Message us and we'll let you know as soon as enrollment opens."
         >
           <Button
@@ -442,7 +442,7 @@ const Mentorship = () => {
      * Nothing anywhere matches the filters, so no category or track has anything to show.
      *
      * Checked across the whole catalogue rather than per group: a search that matches only online
-     * courses should still open the physical category and let its tracks say so themselves, and a
+     * programs should still open the physical category and let its tracks say so themselves, and a
      * search that matches nothing at all is the one case worth interrupting the page for.
      */
     if (visibleCount === 0 && hasActiveFilters) {
@@ -450,7 +450,7 @@ const Mentorship = () => {
         <StatusCard
           icon={SearchX}
           tone="muted"
-          title="No courses match your search"
+          title="No programs match your search"
           description="Try a different keyword, or widen the price range to see the full catalogue again."
         >
           <Button type="button" onClick={clearFilters} className="btn-premium min-h-11">

@@ -135,13 +135,13 @@ const PaymentInstructions = ({
         </dl>
 
         {settings.currency.trim().toUpperCase() !== priceCurrency.trim().toUpperCase() ? (
-          // Surfaced rather than silently reconciled: the course is priced in one
+          // Surfaced rather than silently reconciled: the program is priced in one
           // currency and the account accepts another, and only a human can decide what
           // the student should actually transfer.
           <div className="mt-5 flex gap-3 rounded-2xl border border-warning/30 bg-warning/5 p-5">
             <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0 text-warning" aria-hidden="true" />
             <p className="text-sm leading-6 text-muted-foreground">
-              This course is priced in {priceCurrency.toUpperCase()} but the account above accepts{" "}
+              This program is priced in {priceCurrency.toUpperCase()} but the account above accepts{" "}
               {settings.currency.toUpperCase()}. Please confirm the exact amount with support
               before transferring.
             </p>

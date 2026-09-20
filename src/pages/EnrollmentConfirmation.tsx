@@ -358,7 +358,7 @@ const EnrollmentConfirmation = () => {
             <h2 className="text-lg font-bold tracking-tight text-foreground">Enrollment details</h2>
 
             <dl className="mt-4">
-              <DetailRow label="Course">
+              <DetailRow label="Program">
                 <Link
                   to={courseDetailPath(record.course_slug)}
                   className="text-primary underline-offset-4 hover:underline"

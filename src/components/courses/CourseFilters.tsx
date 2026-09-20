@@ -30,7 +30,7 @@ const CourseFilters = ({ filters, onChange, gridId }: CourseFiltersProps) => {
       <div className="flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
         <div className="w-full max-w-md">
           <Label htmlFor="course-search" className="sr-only">
-            Search courses
+            Search programs
           </Label>
           <div className="relative">
             <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
@@ -38,7 +38,7 @@ const CourseFilters = ({ filters, onChange, gridId }: CourseFiltersProps) => {
               id="course-search"
               type="search"
               autoComplete="off"
-              placeholder="Search courses…"
+              placeholder="Search programs…"
               value={filters.query}
               onChange={(event) => updateQuery(event.target.value)}
               aria-controls={gridId}
@@ -51,7 +51,7 @@ const CourseFilters = ({ filters, onChange, gridId }: CourseFiltersProps) => {
           <SlidersHorizontal className="hidden h-4 w-4 shrink-0 text-muted-foreground sm:block" />
           <div
             role="group"
-            aria-label="Filter courses by price"
+            aria-label="Filter programs by price"
             className="flex shrink-0 gap-2"
           >
             {PRICE_RANGE_OPTIONS.map((option) => {

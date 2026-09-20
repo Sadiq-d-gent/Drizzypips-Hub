@@ -19,7 +19,7 @@ const CourseCard = ({ course }: CourseCardProps) => {
   const isFree = isFreeCourse(course.price);
   const formattedPrice = isFree ? "Free" : formatCoursePrice(course.price, course.currency);
   const showThumbnail = Boolean(course.thumbnail_url) && !thumbnailFailed;
-  const topicCount = course.learnings.length;
+  const benefitCount = course.learnings.length;
 
   return (
     <Card className="group flex h-full flex-col overflow-hidden rounded-3xl border-border bg-card shadow-premium transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl">
@@ -59,11 +59,11 @@ const CourseCard = ({ course }: CourseCardProps) => {
             <span>{course.duration}</span>
           </span>
 
-          {topicCount > 0 ? (
+          {benefitCount > 0 ? (
             <span className="flex items-center gap-2">
               <ListChecks className="h-4 w-4 shrink-0 text-success" aria-hidden="true" />
               <span>
-                {topicCount} {topicCount === 1 ? "topic" : "topics"}
+                {benefitCount} {benefitCount === 1 ? "benefit" : "benefits"}
               </span>
             </span>
           ) : null}
@@ -80,10 +80,10 @@ const CourseCard = ({ course }: CourseCardProps) => {
           <Button
             asChild
             className="btn-premium min-h-11 px-6 py-2"
-            aria-label={`View course details for ${course.title}`}
+            aria-label={`View program details for ${course.title}`}
           >
             <Link to={courseDetailPath(course.slug)}>
-              View Course
+              View Program
               <ArrowRight className="h-4 w-4" aria-hidden="true" />
             </Link>
           </Button>

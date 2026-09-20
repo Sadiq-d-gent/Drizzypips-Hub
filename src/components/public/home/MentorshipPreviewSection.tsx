@@ -13,16 +13,16 @@ import { openWhatsApp } from "@/lib/whatsapp";
 import { Link } from "react-router-dom";
 
 /**
- * The first three published courses, on the homepage.
+ * The first three published programs, on the homepage.
  *
- * Previously three hardcoded programs whose only action was a WhatsApp message — a visitor who
+ * Previously three hardcoded programs whose only action was a WhatsApp message, so a visitor who
  * clicked one landed in a chat instead of at the thing they had just read about. These are the
  * real rows from `public.courses`, rendered with the same CourseCard the catalogue uses, so a
- * price change reaches the homepage the moment it is saved and every card leads to a course
+ * price change reaches the homepage the moment it is saved and every card leads to a program
  * that can actually be enrolled in.
  *
  * Three, and only the published ones, because `useCourses` resolves through the public policy
- * and this is a preview — the catalogue behind "View all courses" is the full list with filters.
+ * and this is a preview. The catalogue behind "View all programs" is the full list with filters.
  *
  * Unlike the copy on this page, this section does have real loading and error branches: it is
  * reading rows that may not exist, not falling back to a compiled-in string.
@@ -59,7 +59,7 @@ const MentorshipPreviewSection = () => {
               We couldn&apos;t load the programs
             </h3>
             <p className="mt-3 max-w-xl leading-7 text-muted-foreground">
-              The rest of this page is fine, only the course list failed to load. Try again, or
+              The rest of this page is fine, only the program list failed to load. Try again, or
               open the full catalogue.
             </p>
             <div className="mt-8 flex flex-wrap justify-center gap-3">
@@ -81,7 +81,7 @@ const MentorshipPreviewSection = () => {
                 className="min-h-11 rounded-xl border-primary text-primary hover:bg-primary hover:text-primary-foreground"
               >
                 <Link to={MENTORSHIP_PATH}>
-                  View all courses
+                  View all programs
                   <ArrowRight className="h-4 w-4" aria-hidden="true" />
                 </Link>
               </Button>
@@ -139,7 +139,7 @@ const MentorshipPreviewSection = () => {
               className="min-h-11 rounded-xl border-primary text-primary hover:bg-primary hover:text-primary-foreground"
             >
               <Link to={MENTORSHIP_PATH}>
-                View all {courses.length} courses
+                View all {courses.length} programs
                 <ArrowRight className="h-4 w-4" aria-hidden="true" />
               </Link>
             </Button>

@@ -243,7 +243,7 @@ const CourseEnrollment = () => {
           /**
            * Paused between page load and submit — the race the in-function guard exists for.
            *
-           * The wording is the one already used for a course that became unavailable, because
+           * The wording is the one already used for a program that became unavailable, because
            * the situation is the same and worse: this student has paid. It deliberately does
            * not repeat the administrator's "come back later" message, which is written for
            * someone who has not yet transferred anything.
@@ -288,7 +288,7 @@ const CourseEnrollment = () => {
 
           if (error instanceof EnrollmentError && error.isCourseUnavailable) {
             setSubmitError(
-              "This course is no longer available for enrollment. Please contact support before making any further payment.",
+              "This program is no longer available for enrollment. Please contact support before making any further payment.",
             );
             return;
           }
@@ -398,8 +398,8 @@ const CourseEnrollment = () => {
         <CourseStateCard
           icon={AlertTriangle}
           tone="destructive"
-          title="We couldn't load this course"
-          description="Something went wrong while reaching our course library. Please check your connection and try again."
+          title="We couldn't load this program"
+          description="Something went wrong while reaching our program library. Please check your connection and try again."
         >
           <Button
             type="button"
@@ -425,13 +425,13 @@ const CourseEnrollment = () => {
     }
 
     // fetchCourseBySlug filters on published = true, and RLS hides unpublished rows from
-    // anonymous visitors, so a draft course is indistinguishable from a missing one here.
+    // anonymous visitors, so a draft program is indistinguishable from a missing one here.
     if (!course) {
       return (
         <CourseStateCard
           icon={SearchX}
-          title="We couldn't find that course"
-          description="This course may have been renamed, unpublished, or the link may be incorrect. Browse the catalogue to find what you're looking for."
+          title="We couldn't find that program"
+          description="This program may have been renamed, unpublished, or the link may be incorrect. Browse the catalogue to find what you're looking for."
         >
           <Button asChild className="btn-premium min-h-11">
             <Link to={MENTORSHIP_PATH}>
@@ -445,7 +445,7 @@ const CourseEnrollment = () => {
 
     /**
      * Enrollments are closed. Checked after the course resolves so a paused site still says
-     * "we couldn't find that course" for a slug that does not exist, rather than implying one
+     * "we couldn't find that program" for a slug that does not exist, rather than implying one
      * is there waiting to reopen.
      *
      * Skipped while a submission error is on screen: someone refused by PA001 after paying
@@ -474,7 +474,7 @@ const CourseEnrollment = () => {
         >
           <Link to={courseDetailPath(course.slug)}>
             <ArrowLeft className="h-4 w-4" aria-hidden="true" />
-            Back to course
+            Back to program
           </Link>
         </Button>
 
