@@ -92,8 +92,12 @@ export function formatPrice(amount: unknown, currency: unknown): string {
 // open. Keeping the wordmark means a blocked image costs the logo and nothing else: the
 // email still says who sent it, exactly as it did before the logo was added.
 function layout(ctx: TemplateContext, heading: string, bodyHtml: string): string {
+  // width/height attributes as well as CSS: Outlook ignores the stylesheet and reserves the
+  // attribute box, and without them a blocked image collapses the layout. height:auto lets
+  // the mark scale with max-width on a narrow phone instead of stretching, so the attributes
+  // must match the asset's real 440x255 ratio or it renders squashed.
   const logo = ctx.logoUrl
-    ? `<img src="${escapeHtml(ctx.logoUrl)}" alt="" width="44" height="44" style="display:block;width:44px;height:44px;border:0;outline:none;border-radius:10px;margin:0 0 12px;" />`
+    ? `<img src="${escapeHtml(ctx.logoUrl)}" alt="" width="220" height="128" style="display:block;width:220px;height:auto;max-width:100%;border:0;outline:none;margin:0 0 18px;" />`
     : ''
 
   return `<!doctype html>
