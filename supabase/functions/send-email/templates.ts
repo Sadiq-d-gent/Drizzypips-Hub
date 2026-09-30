@@ -26,6 +26,11 @@ export interface RenderedEmail {
 export interface TemplateContext {
   brand: string
   siteUrl: string
+  // Absolute, publicly reachable URL of the brand mark shown at the top of every email.
+  // Optional: empty or absent renders the wordmark alone, which is what this layout did
+  // before the logo existed. A relative path cannot work here, an inbox has no origin to
+  // resolve it against, so index.ts builds a fully qualified URL or passes nothing.
+  logoUrl?: string
 }
 
 // ---------------------------------------------------------------------------
@@ -80,11 +85,22 @@ export function formatPrice(amount: unknown, currency: unknown): string {
 // Plain inline-styled HTML. No framework and no external stylesheet, because a mail client
 // will strip a <style> block and ignore a class. Table-free and single-column, which is the
 // layout least likely to be mangled and the one that already reads correctly on a phone.
+//
+// The header carries the logo and the wordmark, not one or the other. Most clients block
+// remote images until the reader allows them, and Gmail fetches them through a proxy rather
+// than from us, so an image-only header is blank for a good share of recipients on first
+// open. Keeping the wordmark means a blocked image costs the logo and nothing else: the
+// email still says who sent it, exactly as it did before the logo was added.
 function layout(ctx: TemplateContext, heading: string, bodyHtml: string): string {
+  const logo = ctx.logoUrl
+    ? `<img src="${escapeHtml(ctx.logoUrl)}" alt="" width="44" height="44" style="display:block;width:44px;height:44px;border:0;outline:none;border-radius:10px;margin:0 0 12px;" />`
+    : ''
+
   return `<!doctype html>
 <html>
   <body style="margin:0;padding:24px;background:#f5f5f5;font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;color:#111;">
     <div style="max-width:560px;margin:0 auto;background:#ffffff;border-radius:12px;padding:32px;">
+      ${logo}
       <p style="margin:0 0 24px;font-size:18px;font-weight:700;letter-spacing:-0.02em;">${escapeHtml(ctx.brand)}</p>
       <h1 style="margin:0 0 16px;font-size:22px;line-height:1.3;font-weight:700;">${escapeHtml(heading)}</h1>
       ${bodyHtml}

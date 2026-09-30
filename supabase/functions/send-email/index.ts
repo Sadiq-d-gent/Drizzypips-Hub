@@ -55,7 +55,7 @@ interface ClaimedEmail {
   attempts: number
 }
 
-const BRAND = 'Drizzypips'
+const BRAND = 'Drizzypipshub'
 
 // One claim per invocation, bounded. The cap sits well under Resend's rate limit and well
 // under the Edge wall-clock budget, and the queue is drained by repeated runs rather than by
@@ -160,9 +160,20 @@ Deno.serve(async (request: Request): Promise<Response> => {
     return json(503, { error: 'Not configured' })
   }
 
+  // The fallbacks are a last resort for a misconfigured deploy, not the normal path:
+  // PUBLIC_SITE_URL is set as a secret and is what actually applies. The trailing slash is
+  // stripped so the logo URL below cannot come out with a doubled one, which some proxies
+  // will not follow.
+  const siteUrl = (Deno.env.get('PUBLIC_SITE_URL') ?? 'https://drizzypipshub.com').replace(/\/+$/, '')
+
   const ctx: TemplateContext = {
     brand: BRAND,
-    siteUrl: Deno.env.get('PUBLIC_SITE_URL') ?? 'https://drizzypips.com',
+    siteUrl,
+    // An inbox has no origin, so this has to be absolute and publicly reachable with no
+    // auth. It is derived from the site URL rather than configured separately: one fewer
+    // secret to keep in step, and the asset ships in the same deploy as the site that
+    // serves it. EMAIL_LOGO_URL overrides it if the mark ever moves to a CDN.
+    logoUrl: Deno.env.get('EMAIL_LOGO_URL') ?? `${siteUrl}/email-logo.jpg`,
   }
 
   const supabase = createClient(supabaseUrl, serviceRoleKey, {
